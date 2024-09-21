@@ -1,9 +1,20 @@
 import {Request, Response} from "express";
 
 export type RequestURI<U> = Request<U>
+
 export type RequestBody<B> = Request<{},{},B>
+
 export type RequestURIBody<U, B> = Request<U, {}, B>
+
 export type ResponseBody<B> = Response<B>
+
+export type BlogsQueryModel = {
+    id: string
+}
+
+export type PostsQueryModel = {
+    id: string
+}
 
 export type FieldError = {
     message: string
