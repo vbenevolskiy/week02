@@ -1,8 +1,6 @@
-import express from "express"
-import {blogsRouter} from "./routers/blogs-router";
-import {postsRouter} from "./routers/posts-router";
+import {app} from "./app"
+import {SETTINGS} from "./settings";
 
-export const app = express();
-app.use(express.json());
-app.use('/ht_02/api/blogs', blogsRouter)
-app.use('/ht_02/api/posts', postsRouter)
+app.listen(SETTINGS.PORT, () => {
+    console.log(`Listening on port ${SETTINGS.PORT}. Press Ctrl+C to stop.`)
+})

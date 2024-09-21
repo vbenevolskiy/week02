@@ -1,5 +1,6 @@
 import {body, validationResult} from "express-validator"
 import {Request, Response, NextFunction} from "express";
+import {blogsRepository} from "../repositories/blogs-repository";
 
 export const postTitleValidator = body("title")
     .trim()
@@ -25,4 +26,9 @@ export const postContentValidator = body("content")
 export const postBlogIDValidator = body("blogID")
     .trim()
     .isEmpty()
-    .withMessage("Blog ID cannot be empty.")
+    .withMessage("BlogID cannot be empty.")
+    .isNumeric()
+    .withMessage("BlogID should contain numeric ID.")
+    .custom(value => {
+        if (!blogsRepository.isValidBlogId(Number(value))) throw new Error("Blog ID is invalid.")
+    })

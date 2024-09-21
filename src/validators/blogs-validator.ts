@@ -1,5 +1,4 @@
-import {body, validationResult} from "express-validator"
-import {Request, Response, NextFunction} from "express";
+import {body} from "express-validator"
 
 export const blogNameValidator = body("name")
     .trim()
