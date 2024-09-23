@@ -1,4 +1,4 @@
-import { Router, Response } from 'express'
+import { Router, Response, Request } from 'express'
 import {
     PostInputModel,
     PostViewModel,
@@ -24,8 +24,9 @@ import {authMiddleware} from "../validators/auth";
 export const postsRouter = Router()
 
 postsRouter.get('/',
-    async (res: ResponseBody<PostViewModel[]>) => {
-        return await postsRepository.getAllPosts()
+    async (req: Request, res: ResponseBody<PostViewModel[]>) => {
+        const result = await postsRepository.getAllPosts()
+        res.status(200).json(result)
     })
 postsRouter.post('/',
     authMiddleware,
@@ -35,11 +36,14 @@ postsRouter.post('/',
     postBlogIDValidator,
     checkValidationResults,
     async (req: RequestBody<PostInputModel>, res:ResponseBody<PostViewModel | APIErrorResult>) => {
-        return res.status(200).json(await postsRepository.createPost(req))
+        const result = await postsRepository.createPost(req)
+        return res.status(200).json(result)
     })
 postsRouter.get('/:id',
     async (req: RequestURI<PostsQueryModel>, res: ResponseBody<PostViewModel>) => {
-        return await postsRepository.getPostById(Number(req.params.id))
+        const result = await postsRepository.getPostById(Number(req.params.id))
+        if (result) res.status(200).json(result)
+        else res.sendStatus(404)
     })
 postsRouter.put('/:id',
     authMiddleware,

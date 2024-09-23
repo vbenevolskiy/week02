@@ -1,4 +1,4 @@
-import { Response, Router } from 'express'
+import { Request, Response, Router } from 'express'
 import {
     ResponseBody,
     BlogViewModel,
@@ -14,11 +14,12 @@ import {checkValidationResults} from "../validators/validation-results";
 import {authMiddleware} from "../validators/auth"
 import {blogsRepository} from "../repositories/blogs-repository";
 
-export const blogsRouter = Router()
+export const blogsRouter = Router({})
 
 blogsRouter.get('/',
-    async (res: ResponseBody<BlogViewModel[]>) => {
-        return await blogsRepository.getAllBlogs()
+    async (req: Request, res: Response<BlogViewModel[]>) => {
+        const result = await blogsRepository.getAllBlogs()
+        res.status(200).json(result)
     })
 blogsRouter.post('/',
     authMiddleware,
@@ -27,11 +28,14 @@ blogsRouter.post('/',
     blogWebsiteURLValidator,
     checkValidationResults,
     async (req: RequestBody<BlogInputModel>, res: ResponseBody<BlogViewModel | APIErrorResult>) => {
-        return res.status(200).json(await blogsRepository.createBlog(req))
+        const result = await blogsRepository.createBlog(req)
+        return res.status(200).json(result)
     })
 blogsRouter.get('/:id',
     async (req: RequestURI<BlogsQueryModel>, res: ResponseBody<BlogViewModel>)=>{
-        return await blogsRepository.getBlogById(Number(req.params.id))
+        const result = await blogsRepository.getBlogById(Number(req.params.id))
+        if (result) res.status(200).json(result)
+        else res.sendStatus(404)
     })
 blogsRouter.put('/:id',
     authMiddleware,

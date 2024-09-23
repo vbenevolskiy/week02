@@ -21,13 +21,15 @@ export type BlogsRepository = {
 export const blogsRepository: BlogsRepository = {
     blogs: [],
     isValidBlogId: async (id: number): Promise<boolean> => {
-        return !!(blogsRepository.blogs.find(b => b.id === id))
+        const result = await blogsRepository.getBlogById(id);
+        if (!result) return false
+        else return true
     },
     getBlogNameById: async (id: number): Promise<string> => {
         return blogsRepository.blogs.find(b => b.id === id)?.name || ""
     },
     getAllBlogs: async (): Promise<BlogViewModel[]> => {
-        return blogsRepository.blogs.map(b =>{
+        const result =  blogsRepository.blogs.map(b =>{
             return {
                 id: b.id.toString(),
                 name: b.name,
@@ -35,6 +37,8 @@ export const blogsRepository: BlogsRepository = {
                 websiteUrl: b.websiteUrl
             }
         })
+        console.log(result)
+        return result
     },
     getBlogById: async (id: number): Promise<BlogViewModel | undefined> => {
         const foundBlog: BlogModel | undefined = blogsRepository.blogs.find(b=>b.id === id)

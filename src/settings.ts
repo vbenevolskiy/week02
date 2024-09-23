@@ -7,6 +7,7 @@ export const SETTINGS = {
     PATH: {
         BLOGS: '/ht_02/api/blogs',
         POSTS: '/ht_02/api/posts',
+        TESTING: '/ht_02/api/testing/all-data',
     },
     ADMIN_AUTH: 'admin:qwerty'
 }
