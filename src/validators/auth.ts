@@ -11,8 +11,8 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
             .json({})
         return
     }
-    const buff = Buffer.from(auth.slice(6), 'base64')
-    const decodedAuth = buff.toString('utf8')
+    // const buff = Buffer.from(auth.slice(6), 'base64')
+    // const decodedAuth = buff.toString('utf8')
 
     const buff2 = Buffer.from(SETTINGS.ADMIN_AUTH, 'utf8')
     const codedAuth = buff2.toString('base64')

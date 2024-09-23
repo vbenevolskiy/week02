@@ -8,7 +8,7 @@ export const app = express()
 app.use(express.json())
 
 app.get("/",(req:Request, res:Response) => {
-    res.status(200).send("APP v. 1.01")
+    res.status(200).send("APP v. 1.02")
 })
 app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use(SETTINGS.PATH.POSTS, postsRouter)
