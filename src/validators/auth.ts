@@ -17,7 +17,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     const codedAuth = buff2.toString('base64')
 
     // if (decodedAuth === ADMIN_AUTH || auth.slice(0, 5) !== 'Basic ') {
-    if (auth.slice(6) !== codedAuth || auth.slice(0, 5) !== 'Basic') {
+    if (auth.slice(6) !== codedAuth || auth.slice(0, 6) !== 'Basic ') {
         res
             .status(401)
             .json({})
