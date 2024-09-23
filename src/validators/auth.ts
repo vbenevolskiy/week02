@@ -2,8 +2,9 @@ import {Request, Response, NextFunction} from 'express';
 import {SETTINGS} from "../settings";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const auth = req.headers['authorisation'] as string // 'Basic xxxx'
+    let auth = req.headers['authorisation'] as string // 'Basic xxxx'
     // console.log(auth)
+    if (!auth) auth = req.headers['authorization'] as string
     if (!auth) {
         res
             .status(401)
