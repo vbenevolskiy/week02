@@ -29,7 +29,7 @@ blogsRouter.post('/',
     checkValidationResults,
     async (req: RequestBody<BlogInputModel>, res: ResponseBody<BlogViewModel | APIErrorResult>) => {
         const result = await blogsRepository.createBlog(req)
-        return res.status(200).json(result)
+        return res.status(201).json(result)
     })
 blogsRouter.get('/:id',
     async (req: RequestURI<BlogsQueryModel>, res: ResponseBody<BlogViewModel>)=>{

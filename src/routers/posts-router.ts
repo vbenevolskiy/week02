@@ -37,7 +37,7 @@ postsRouter.post('/',
     checkValidationResults,
     async (req: RequestBody<PostInputModel>, res:ResponseBody<PostViewModel | APIErrorResult>) => {
         const result = await postsRepository.createPost(req)
-        return res.status(200).json(result)
+        return res.status(201).json(result)
     })
 postsRouter.get('/:id',
     async (req: RequestURI<PostsQueryModel>, res: ResponseBody<PostViewModel>) => {

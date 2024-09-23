@@ -9,7 +9,7 @@ export const checkValidationResults = (req: Request, res: Response, next: NextFu
                 errorsMessages: errors
                     .array({onlyFirstError: true})
                     .map((err) => {
-                        return {message: err.msg, field: (err as any).param}
+                        return {message: err.msg, field: (err as any).path}
                     }),
             })
         return
