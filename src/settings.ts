@@ -6,9 +6,9 @@ export const SETTINGS = {
     // все хардкодные значения должны быть здесь, для удобства их изменения
     PORT: process.env.PORT || 5000,
     PATH: {
-        BLOGS: '/ht_02/api/blogs',
-        POSTS: '/ht_02/api/posts',
-        TESTING: '/ht_02/api/testing/all-data',
+        BLOGS: '/hometask_03/api/blogs',
+        POSTS: '/hometask_03/api/posts',
+        TESTING: '/hometask_03/api/testing/all-data',
     },
     ADMIN_AUTH: 'admin:qwerty',
     DB_NAME: 'snet'
