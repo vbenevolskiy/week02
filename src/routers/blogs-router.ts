@@ -1,13 +1,13 @@
-import { Request, Response, Router } from 'express'
+import {Request, Response, Router} from 'express'
 import {
-    ResponseBody,
-    BlogViewModel,
-    RequestURIBody,
-    RequestBody,
-    BlogInputModel,
     APIErrorResult,
+    BlogInputModel,
+    BlogsQueryModel,
+    BlogViewModel,
+    RequestBody,
     RequestURI,
-    BlogsQueryModel
+    RequestURIBody,
+    ResponseBody
 } from "../types"
 import {blogDescriptionValidator, blogNameValidator, blogWebsiteURLValidator} from "../validators/blogs-validator";
 import {checkValidationResults} from "../validators/validation-results";

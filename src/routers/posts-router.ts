@@ -1,12 +1,13 @@
-import { Router, Response, Request } from 'express'
+import {Request, Response, Router} from 'express'
 import {
+    APIErrorResult,
     PostInputModel,
+    PostsQueryModel,
     PostViewModel,
     RequestBody,
     RequestURI,
-    ResponseBody,
     RequestURIBody,
-    PostsQueryModel, APIErrorResult
+    ResponseBody
 } from "../types"
 
 import {
