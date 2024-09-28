@@ -1,6 +1,14 @@
 import {app} from "./app"
 import {SETTINGS} from "./settings";
+import {ConnectDB} from "./repositories/db";
 
-app.listen(5000, () => {
-    console.log(`Listening on port ${SETTINGS.PORT}. Press Ctrl+C to stop.`)
-})
+const port = process.env.PORT || SETTINGS.PORT || 4000
+
+const  startApp = async () => {
+    await ConnectDB()
+    app.listen(port, () => {
+        console.log(`Listening on port ${port}. Press Ctrl+C to stop.`)
+    })
+}
+
+startApp()
