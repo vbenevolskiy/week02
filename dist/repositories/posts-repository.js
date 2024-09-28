@@ -21,7 +21,8 @@ exports.postsRepository = {
                 shortDescription: p.shortDescription,
                 content: p.content,
                 blogId: p.blogId.toString(),
-                blogName: p.blogName
+                blogName: p.blogName,
+                createdAt: p.createdAt,
             };
         });
     }),
@@ -35,17 +36,20 @@ exports.postsRepository = {
                 content: foundPost.content,
                 blogId: foundPost.blogId.toString(),
                 blogName: foundPost.blogName,
+                createdAt: foundPost.createdAt,
             };
         }
     }),
     createPost: (req) => __awaiter(void 0, void 0, void 0, function* () {
+        const now = new Date();
         const newPost = {
-            id: Number(new Date()),
+            id: Number(now),
             title: req.body.title,
             shortDescription: req.body.shortDescription,
             content: req.body.content,
             blogId: Number(req.body.blogId),
             blogName: yield blogs_repository_1.blogsRepository.getBlogNameById(Number(req.body.blogId)),
+            createdAt: now.toISOString(),
         };
         exports.postsRepository.posts.push(newPost);
         return {
@@ -55,6 +59,7 @@ exports.postsRepository = {
             content: newPost.content,
             blogId: newPost.blogId.toString(),
             blogName: newPost.blogName,
+            createdAt: newPost.createdAt
         };
     }),
     updatePost: (id, req) => __awaiter(void 0, void 0, void 0, function* () {

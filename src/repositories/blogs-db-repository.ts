@@ -1,4 +1,5 @@
 import {BlogInputModel, BlogViewModel, RequestBody} from "../types";
+import {dbClient} from "./db";
 
 export type BlogModel = {
     id: number,

@@ -29,7 +29,9 @@ exports.blogsRepository = {
                 id: b.id.toString(),
                 name: b.name,
                 description: b.description,
-                websiteUrl: b.websiteUrl
+                websiteUrl: b.websiteUrl,
+                createdAt: b.createdAt,
+                isMembership: b.isMembership
             };
         });
         console.log(result);
@@ -42,16 +44,21 @@ exports.blogsRepository = {
                 id: foundBlog.id.toString(),
                 name: foundBlog.name,
                 description: foundBlog.description,
-                websiteUrl: foundBlog.websiteUrl
+                websiteUrl: foundBlog.websiteUrl,
+                createdAt: foundBlog.createdAt,
+                isMembership: foundBlog.isMembership
             };
         }
     }),
     createBlog: (req) => __awaiter(void 0, void 0, void 0, function* () {
+        const now = new Date();
         const newBlog = {
-            id: Number(new Date()),
+            id: Number(now),
             name: req.body.name,
             description: req.body.description,
-            websiteUrl: req.body.websiteUrl
+            websiteUrl: req.body.websiteUrl,
+            createdAt: now.toISOString(),
+            isMembership: false
         };
         exports.blogsRepository.blogs.push(newBlog);
         return {
@@ -59,6 +66,8 @@ exports.blogsRepository = {
             name: newBlog.name,
             description: newBlog.description,
             websiteUrl: newBlog.websiteUrl,
+            createdAt: newBlog.createdAt,
+            isMembership: newBlog.isMembership
         };
     }),
     updateBlog: (id, req) => __awaiter(void 0, void 0, void 0, function* () {
