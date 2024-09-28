@@ -1,107 +1,65 @@
 import {BlogInputModel, BlogViewModel, RequestBody} from "../types";
-import {dbClient} from "./db";
-
-export type BlogModel = {
-    id: number,
-    name: string,
-    description: string,
-    websiteUrl: string,
-    createdAt: string,
-    isMembership: boolean
-}
+import {dbClient, dbName} from "./db";
+import {Collection} from 'mongodb'
 
 export type BlogsRepository = {
-    blogs: BlogModel[],
+    blogs: Collection<BlogViewModel>,
     isValidBlogId: (id: number) => Promise<boolean>,
     getBlogNameById: (id: number) => Promise<string>,
     getAllBlogs: () => Promise<BlogViewModel[]>,
-    getBlogById: (id: number) => Promise<BlogViewModel | undefined>,
+    getBlogById: (id: number) => Promise<BlogViewModel | null>,
     createBlog: (req: RequestBody<BlogInputModel>) => Promise<BlogViewModel>,
     updateBlog: (id: number, req: RequestBody<BlogInputModel>) => Promise<boolean>,
     deleteBlog: (id: number) => Promise<boolean>
 }
 
 export const blogsRepository: BlogsRepository = {
-    blogs: [],
+    blogs: dbClient.db(dbName).collection<BlogViewModel>("blogs"),
 
     isValidBlogId: async (id: number): Promise<boolean> => {
-        const result = await blogsRepository.getBlogById(id);
-        if (!result) return false
-        else return true
+        const dbResult: BlogViewModel | null = await blogsRepository.blogs.findOne({id:id.toString()})
+        return !!dbResult
     },
 
     getBlogNameById: async (id: number): Promise<string> => {
-        return blogsRepository.blogs.find(b => b.id === id)?.name || ""
+        const dbResult: BlogViewModel | null  = await blogsRepository.blogs.findOne({id: id.toString()})
+        if (dbResult) return dbResult.name
+        else return ""
     },
 
     getAllBlogs: async (): Promise<BlogViewModel[]> => {
-        const result =  blogsRepository.blogs.map(b =>{
-            return {
-                id: b.id.toString(),
-                name: b.name,
-                description: b.description,
-                websiteUrl: b.websiteUrl,
-                createdAt: b.createdAt,
-                isMembership: b.isMembership
-            }
-        })
-        console.log(result)
-        return result
+        return blogsRepository.blogs.find({}).toArray()
     },
 
-    getBlogById: async (id: number): Promise<BlogViewModel | undefined> => {
-        const foundBlog: BlogModel | undefined = blogsRepository.blogs.find(b=>b.id === id)
-        if (foundBlog) {
-            return {
-                id: foundBlog.id.toString(),
-                name: foundBlog.name,
-                description: foundBlog.description,
-                websiteUrl: foundBlog.websiteUrl,
-                createdAt: foundBlog.createdAt,
-                isMembership: foundBlog.isMembership
-            }
-        }
+    getBlogById: async (id: number): Promise<BlogViewModel | null> => {
+        return await blogsRepository.blogs.findOne({id:id.toString()})
     },
 
     createBlog: async (req: RequestBody<BlogInputModel>): Promise<BlogViewModel> => {
         const now = new Date();
-        const newBlog: BlogModel = {
-            id: Number(now),
+        const min = Math.ceil(12);
+        const max = Math.floor(97);
+        const rand = Math.floor(Math.random() * (max - min + 1)) + min;
+        const newBlog: BlogViewModel = {
+            id: Number(now).toString()+rand.toString(),
             name: req.body.name,
             description: req.body.description,
             websiteUrl: req.body.websiteUrl,
             createdAt: now.toISOString(),
             isMembership: false
         }
-        blogsRepository.blogs.push(newBlog)
-        return {
-            id: newBlog.id.toString(),
-            name: newBlog.name,
-            description: newBlog.description,
-            websiteUrl: newBlog.websiteUrl,
-            createdAt: newBlog.createdAt,
-            isMembership: newBlog.isMembership
-        }
+        await blogsRepository.blogs.insertOne(newBlog)
+        return newBlog
     },
 
     updateBlog: async (id: number, req: RequestBody<BlogInputModel>): Promise<boolean> => {
-        const foundBlog: BlogModel | undefined = blogsRepository.blogs.find(b=>b.id === id)
-        if (foundBlog) {
-            if (req.body.name) foundBlog.name = req.body.name
-            if (req.body.description) foundBlog.description = req.body.description
-            if (req.body.websiteUrl) foundBlog.websiteUrl = req.body.websiteUrl
-            return true
-        }
-        return false
+        const newValues = {$set: {name: req.body.name, description: req.body.description, websiteUrl: req.body.websiteUrl}}
+        const dbResult = await blogsRepository.blogs.updateOne({id: id.toString()},newValues)
+        return dbResult.matchedCount === 1
     },
 
     deleteBlog: async (id: number): Promise<boolean> => {
-        for (let i=0; i<blogsRepository.blogs.length; i++) {
-            if (blogsRepository.blogs[i].id === id)  {
-                blogsRepository.blogs.splice(i, 1)
-                return true
-            }
-        }
-        return false
+        const dbResult = await blogsRepository.blogs.deleteOne({id: id.toString()})
+        return dbResult.deletedCount === 1
     }
 }

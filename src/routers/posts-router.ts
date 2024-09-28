@@ -19,7 +19,7 @@ import {
 
 import {checkValidationResults} from "../validators/validation-results"
 
-import {postsRepository} from "../repositories/posts-repository";
+import {postsRepository} from "../repositories/posts-db-repository";
 import {authMiddleware} from "../validators/auth";
 
 export const postsRouter = Router()

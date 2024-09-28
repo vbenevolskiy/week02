@@ -12,7 +12,7 @@ import {
 import {blogDescriptionValidator, blogNameValidator, blogWebsiteURLValidator} from "../validators/blogs-validator";
 import {checkValidationResults} from "../validators/validation-results";
 import {authMiddleware} from "../validators/auth"
-import {blogsRepository} from "../repositories/blogs-repository";
+import {blogsRepository} from "../repositories/blogs-db-repository";
 
 export const blogsRouter = Router({})
 

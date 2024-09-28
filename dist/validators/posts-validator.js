@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postBlogIDValidator = exports.postContentValidator = exports.postShortDescriptionValidator = exports.postTitleValidator = void 0;
 const express_validator_1 = require("express-validator");
-const blogs_repository_1 = require("../repositories/blogs-repository");
+const blogs_db_repository_1 = require("../repositories/blogs-db-repository");
 exports.postTitleValidator = (0, express_validator_1.body)("title")
     .not().isEmpty()
     .withMessage("Title is required")
@@ -44,7 +44,7 @@ exports.postBlogIDValidator = (0, express_validator_1.body)("blogId")
     .trim()
     .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
     const id = Number(value);
-    const result = yield blogs_repository_1.blogsRepository.isValidBlogId(id);
+    const result = yield blogs_db_repository_1.blogsRepository.isValidBlogId(id);
     if (!result)
         throw new Error("Blog ID is invalid");
 }));

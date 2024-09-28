@@ -10,5 +10,6 @@ export const SETTINGS = {
         POSTS: '/ht_02/api/posts',
         TESTING: '/ht_02/api/testing/all-data',
     },
-    ADMIN_AUTH: 'admin:qwerty'
+    ADMIN_AUTH: 'admin:qwerty',
+    DB_NAME: 'snet'
 }

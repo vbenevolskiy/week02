@@ -1,5 +1,5 @@
 import {body} from "express-validator"
-import {blogsRepository} from "../repositories/blogs-repository";
+import {blogsRepository} from "../repositories/blogs-db-repository";
 
 export const postTitleValidator = body("title")
     .not().isEmpty()
