@@ -15,32 +15,25 @@ const mongodb_1 = require("mongodb");
 const blogs_db_repository_1 = require("./blogs-db-repository");
 exports.postsRepository = {
     posts: db_1.dbClient.db(db_1.dbName).collection("posts"),
+    db2View: (el) => {
+        return {
+            id: el._id.toString(),
+            title: el.title,
+            shortDescription: el.shortDescription,
+            content: el.content,
+            blogId: el.blogId.toString(),
+            blogName: el.blogName,
+            createdAt: el.createdAt
+        };
+    },
     getAllPosts: () => __awaiter(void 0, void 0, void 0, function* () {
         const dbResult = yield exports.postsRepository.posts.find({}).toArray();
-        return dbResult.map(el => {
-            return {
-                id: el._id.toString(),
-                title: el.title,
-                shortDescription: el.shortDescription,
-                content: el.content,
-                blogId: el.blogId.toString(),
-                blogName: el.blogName,
-                createdAt: el.createdAt
-            };
-        });
+        return dbResult.map(el => exports.postsRepository.db2View(el));
     }),
     getPostById: (id) => __awaiter(void 0, void 0, void 0, function* () {
         const dbResult = yield exports.postsRepository.posts.findOne({ _id: new mongodb_1.ObjectId(id) });
         if (dbResult)
-            return {
-                id: dbResult._id.toString(),
-                title: dbResult.title,
-                shortDescription: dbResult.shortDescription,
-                content: dbResult.content,
-                blogId: dbResult.blogId.toString(),
-                blogName: dbResult.blogName,
-                createdAt: dbResult.createdAt
-            };
+            return exports.postsRepository.db2View(dbResult);
         return null;
     }),
     createPost: (req) => __awaiter(void 0, void 0, void 0, function* () {
@@ -55,15 +48,7 @@ exports.postsRepository = {
         };
         const insertResult = yield exports.postsRepository.posts.insertOne(newPost);
         const dbResult = yield exports.postsRepository.posts.findOne({ _id: insertResult.insertedId });
-        return {
-            id: dbResult._id.toString(),
-            title: dbResult.title,
-            shortDescription: dbResult.shortDescription,
-            content: dbResult.content,
-            blogId: dbResult.blogId.toString(),
-            blogName: dbResult.blogName,
-            createdAt: dbResult.createdAt
-        };
+        return exports.postsRepository.db2View(dbResult);
     }),
     updatePost: (id, req) => __awaiter(void 0, void 0, void 0, function* () {
         const newValues = {

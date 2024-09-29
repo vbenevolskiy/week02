@@ -14,6 +14,16 @@ const db_1 = require("./db");
 const mongodb_1 = require("mongodb");
 exports.blogsRepository = {
     blogs: db_1.dbClient.db(db_1.dbName).collection("blogs"),
+    db2View: (el) => {
+        return {
+            id: el._id.toString(),
+            name: el.name,
+            description: el.description,
+            websiteUrl: el.websiteUrl,
+            createdAt: el.createdAt,
+            isMembership: el.isMembership
+        };
+    },
     isValidBlogId: (id) => __awaiter(void 0, void 0, void 0, function* () {
         const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: new mongodb_1.ObjectId(id) });
         return !!dbResult;
@@ -27,42 +37,19 @@ exports.blogsRepository = {
     }),
     getAllBlogs: () => __awaiter(void 0, void 0, void 0, function* () {
         const dbResult = yield exports.blogsRepository.blogs.find({}).toArray();
-        return dbResult.map(el => {
-            return {
-                id: el._id.toString(),
-                name: el.name,
-                description: el.description,
-                websiteUrl: el.websiteUrl,
-                createdAt: el.createdAt,
-                isMembership: el.isMembership
-            };
-        });
+        return dbResult.map(el => exports.blogsRepository.db2View(el));
     }),
     getBlogById: (id) => __awaiter(void 0, void 0, void 0, function* () {
         const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: new mongodb_1.ObjectId(id) });
         if (dbResult)
-            return {
-                id: dbResult._id.toString(),
-                name: dbResult.name,
-                description: dbResult.description,
-                websiteUrl: dbResult.websiteUrl,
-                createdAt: dbResult.createdAt,
-                isMembership: dbResult.isMembership
-            };
+            return exports.blogsRepository.db2View(dbResult);
         return null;
     }),
     createBlog: (req) => __awaiter(void 0, void 0, void 0, function* () {
         const newBlog = Object.assign({ _id: new mongodb_1.ObjectId(), createdAt: (new Date()).toISOString(), isMembership: false }, req.body);
         const res = yield exports.blogsRepository.blogs.insertOne(newBlog);
         const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: res.insertedId });
-        return {
-            id: dbResult._id.toString(),
-            name: dbResult.name,
-            description: dbResult.description,
-            websiteUrl: dbResult.websiteUrl,
-            createdAt: dbResult.createdAt,
-            isMembership: dbResult.isMembership
-        };
+        return exports.blogsRepository.db2View(dbResult);
     }),
     updateBlog: (id, req) => __awaiter(void 0, void 0, void 0, function* () {
         const newValues = { $set: { name: req.body.name, description: req.body.description, websiteUrl: req.body.websiteUrl } };

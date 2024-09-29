@@ -15,6 +15,7 @@ export type PostDBModel = {
 
 export type PostsRepository = {
     posts: Collection<PostDBModel>,
+    db2View: (el: PostDBModel) => PostViewModel,
     getAllPosts: () => Promise<PostViewModel[]>,
     getPostById: (id: string) => Promise<PostViewModel | null>,
     createPost: (req: RequestBody<PostInputModel>) => Promise<PostViewModel>,
@@ -26,32 +27,26 @@ export type PostsRepository = {
 export const postsRepository:PostsRepository = {
     posts: dbClient.db(dbName).collection<PostDBModel>("posts"),
 
+    db2View: (el: PostDBModel):PostViewModel => {
+        return {
+            id: el._id.toString(),
+            title: el.title,
+            shortDescription: el.shortDescription,
+            content: el.content,
+            blogId: el.blogId.toString(),
+            blogName: el.blogName,
+            createdAt: el.createdAt
+        }
+    },
+
     getAllPosts: async (): Promise<PostViewModel[]> => {
         const dbResult: PostDBModel[] = await postsRepository.posts.find({}).toArray()
-        return dbResult.map(el =>{
-            return {
-                id: el._id.toString(),
-                title: el.title,
-                shortDescription: el.shortDescription,
-                content: el.content,
-                blogId: el.blogId.toString(),
-                blogName: el.blogName,
-                createdAt: el.createdAt
-            }
-        })
+        return dbResult.map(el => postsRepository.db2View(el))
     },
 
     getPostById: async (id: string): Promise<PostViewModel | null> => {
         const dbResult = await postsRepository.posts.findOne({_id: new ObjectId(id)})
-        if (dbResult) return {
-            id: dbResult._id.toString(),
-            title: dbResult.title,
-            shortDescription: dbResult.shortDescription,
-            content: dbResult.content,
-            blogId: dbResult.blogId.toString(),
-            blogName: dbResult.blogName,
-            createdAt: dbResult.createdAt
-        }
+        if (dbResult) return postsRepository.db2View(dbResult)
         return null
     },
 
@@ -67,15 +62,7 @@ export const postsRepository:PostsRepository = {
         }
         const insertResult = await postsRepository.posts.insertOne(newPost)
         const dbResult = await postsRepository.posts.findOne({_id: insertResult.insertedId})
-        return {
-            id: dbResult!._id.toString(),
-            title: dbResult!.title,
-            shortDescription: dbResult!.shortDescription,
-            content: dbResult!.content,
-            blogId: dbResult!.blogId.toString(),
-            blogName: dbResult!.blogName,
-            createdAt: dbResult!.createdAt
-        }
+        return postsRepository.db2View(dbResult!)
     },
 
     updatePost: async (id: string, req: RequestBody<PostInputModel>): Promise<boolean> => {

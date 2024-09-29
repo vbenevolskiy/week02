@@ -13,6 +13,7 @@ export type BlogDBModel = {
 
 export type BlogsRepository = {
     blogs: Collection<BlogDBModel>,
+    db2View: (el: BlogDBModel) => BlogViewModel,
     isValidBlogId: (id: string) => Promise<boolean>,
     getBlogNameById: (id: string) => Promise<string>,
     getAllBlogs: () => Promise<BlogViewModel[]>,
@@ -24,6 +25,17 @@ export type BlogsRepository = {
 
 export const blogsRepository: BlogsRepository = {
     blogs: dbClient.db(dbName).collection<BlogDBModel>("blogs"),
+
+    db2View: (el:BlogDBModel):BlogViewModel =>{
+        return {
+            id: el._id.toString(),
+            name: el.name,
+            description: el.description,
+            websiteUrl: el.websiteUrl,
+            createdAt: el.createdAt,
+            isMembership: el.isMembership
+        }
+    },
 
     isValidBlogId: async (id: string): Promise<boolean> => {
         const dbResult: BlogDBModel | null = await blogsRepository.blogs.findOne({_id:new ObjectId(id)})
@@ -38,28 +50,12 @@ export const blogsRepository: BlogsRepository = {
 
     getAllBlogs: async (): Promise<BlogViewModel[]> => {
         const dbResult: BlogDBModel[] = await blogsRepository.blogs.find({}).toArray()
-        return dbResult.map(el => {
-            return {
-                id: el._id.toString(),
-                name: el.name,
-                description: el.description,
-                websiteUrl: el.websiteUrl,
-                createdAt: el.createdAt,
-                isMembership: el.isMembership
-            }
-        });
+        return dbResult.map(el => blogsRepository.db2View(el));
     },
 
     getBlogById: async (id: string): Promise<BlogViewModel | null> => {
         const dbResult: BlogDBModel | null = await blogsRepository.blogs.findOne({_id:new ObjectId(id)})
-        if (dbResult) return {
-            id: dbResult._id.toString(),
-            name: dbResult.name,
-            description: dbResult.description,
-            websiteUrl: dbResult.websiteUrl,
-            createdAt: dbResult.createdAt,
-            isMembership: dbResult.isMembership
-        }
+        if (dbResult) return blogsRepository.db2View(dbResult)
         return null
     },
 
@@ -72,14 +68,7 @@ export const blogsRepository: BlogsRepository = {
         }
         const res = await blogsRepository.blogs.insertOne(newBlog)
         const dbResult = await blogsRepository.blogs.findOne({_id: res.insertedId})
-        return {
-            id: dbResult!._id.toString(),
-            name: dbResult!.name,
-            description: dbResult!.description,
-            websiteUrl: dbResult!.websiteUrl,
-            createdAt: dbResult!.createdAt,
-            isMembership: dbResult!.isMembership
-        }
+        return blogsRepository.db2View(dbResult!)
     },
 
     updateBlog: async (id: string, req: RequestBody<BlogInputModel>): Promise<boolean> => {
