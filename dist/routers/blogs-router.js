@@ -25,21 +25,21 @@ exports.blogsRouter.post('/', auth_1.authMiddleware, blogs_validator_1.blogNameV
     return res.status(201).json(result);
 }));
 exports.blogsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield blogs_db_repository_1.blogsRepository.getBlogById(Number(req.params.id));
+    const result = yield blogs_db_repository_1.blogsRepository.getBlogById(req.params.id);
     if (result)
         res.status(200).json(result);
     else
         res.sendStatus(404);
 }));
 exports.blogsRouter.put('/:id', auth_1.authMiddleware, blogs_validator_1.blogNameValidator, blogs_validator_1.blogDescriptionValidator, blogs_validator_1.blogWebsiteURLValidator, validation_results_1.checkValidationResults, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const updateResult = yield blogs_db_repository_1.blogsRepository.updateBlog(Number(req.params.id), req);
+    const updateResult = yield blogs_db_repository_1.blogsRepository.updateBlog(req.params.id, req);
     if (updateResult)
         res.sendStatus(204);
     else
         res.sendStatus(404);
 }));
 exports.blogsRouter.delete('/:id', auth_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const deleteResult = yield blogs_db_repository_1.blogsRepository.deleteBlog(Number(req.params.id));
+    const deleteResult = yield blogs_db_repository_1.blogsRepository.deleteBlog(req.params.id);
     if (deleteResult)
         res.sendStatus(204);
     else

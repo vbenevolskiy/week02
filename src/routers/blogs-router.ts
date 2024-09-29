@@ -33,7 +33,7 @@ blogsRouter.post('/',
     })
 blogsRouter.get('/:id',
     async (req: RequestURI<BlogsQueryModel>, res: ResponseBody<BlogViewModel>)=>{
-        const result = await blogsRepository.getBlogById(Number(req.params.id))
+        const result = await blogsRepository.getBlogById(req.params.id)
         if (result) res.status(200).json(result)
         else res.sendStatus(404)
     })
@@ -44,7 +44,7 @@ blogsRouter.put('/:id',
     blogWebsiteURLValidator,
     checkValidationResults,
     async (req: RequestURIBody<BlogsQueryModel,BlogInputModel>, res:ResponseBody<never | APIErrorResult>)=>{
-        const updateResult: boolean = await blogsRepository.updateBlog(Number(req.params.id), req)
+        const updateResult: boolean = await blogsRepository.updateBlog(req.params.id, req)
         if (updateResult)
             res.sendStatus(204)
         else res.sendStatus(404)
@@ -52,7 +52,7 @@ blogsRouter.put('/:id',
 blogsRouter.delete('/:id',
     authMiddleware,
     async (req: RequestURI<BlogsQueryModel>, res:Response)=>{
-        const deleteResult: boolean = await blogsRepository.deleteBlog(Number(req.params.id))
+        const deleteResult: boolean = await blogsRepository.deleteBlog(req.params.id)
         if (deleteResult)
             res.sendStatus(204)
         else res.sendStatus(404)

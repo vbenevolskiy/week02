@@ -4,25 +4,25 @@ import {Collection} from 'mongodb'
 
 export type BlogsRepository = {
     blogs: Collection<BlogViewModel>,
-    isValidBlogId: (id: number) => Promise<boolean>,
-    getBlogNameById: (id: number) => Promise<string>,
+    isValidBlogId: (id: string) => Promise<boolean>,
+    getBlogNameById: (id: string) => Promise<string>,
     getAllBlogs: () => Promise<BlogViewModel[]>,
-    getBlogById: (id: number) => Promise<BlogViewModel | null>,
+    getBlogById: (id: string) => Promise<BlogViewModel | null>,
     createBlog: (req: RequestBody<BlogInputModel>) => Promise<BlogViewModel>,
-    updateBlog: (id: number, req: RequestBody<BlogInputModel>) => Promise<boolean>,
-    deleteBlog: (id: number) => Promise<boolean>
+    updateBlog: (id: string, req: RequestBody<BlogInputModel>) => Promise<boolean>,
+    deleteBlog: (id: string) => Promise<boolean>
 }
 
 export const blogsRepository: BlogsRepository = {
     blogs: dbClient.db(dbName).collection<BlogViewModel>("blogs"),
 
-    isValidBlogId: async (id: number): Promise<boolean> => {
-        const dbResult: BlogViewModel | null = await blogsRepository.blogs.findOne({id:id.toString()})
+    isValidBlogId: async (id: string): Promise<boolean> => {
+        const dbResult: BlogViewModel | null = await blogsRepository.blogs.findOne({id:id})
         return !!dbResult
     },
 
-    getBlogNameById: async (id: number): Promise<string> => {
-        const dbResult: BlogViewModel | null  = await blogsRepository.blogs.findOne({id: id.toString()})
+    getBlogNameById: async (id: string): Promise<string> => {
+        const dbResult: BlogViewModel | null  = await blogsRepository.blogs.findOne({id: id})
         if (dbResult) return dbResult.name
         else return ""
     },
@@ -31,8 +31,8 @@ export const blogsRepository: BlogsRepository = {
         return blogsRepository.blogs.find({}).toArray()
     },
 
-    getBlogById: async (id: number): Promise<BlogViewModel | null> => {
-        return await blogsRepository.blogs.findOne({id:id.toString()})
+    getBlogById: async (id: string): Promise<BlogViewModel | null> => {
+        return await blogsRepository.blogs.findOne({id:id})
     },
 
     createBlog: async (req: RequestBody<BlogInputModel>): Promise<BlogViewModel> => {
@@ -49,17 +49,18 @@ export const blogsRepository: BlogsRepository = {
             isMembership: false
         }
         await blogsRepository.blogs.insertOne(newBlog)
+        console.log(newBlog)
         return newBlog
     },
 
-    updateBlog: async (id: number, req: RequestBody<BlogInputModel>): Promise<boolean> => {
+    updateBlog: async (id: string, req: RequestBody<BlogInputModel>): Promise<boolean> => {
         const newValues = {$set: {name: req.body.name, description: req.body.description, websiteUrl: req.body.websiteUrl}}
-        const dbResult = await blogsRepository.blogs.updateOne({id: id.toString()},newValues)
+        const dbResult = await blogsRepository.blogs.updateOne({id: id},newValues)
         return dbResult.matchedCount === 1
     },
 
-    deleteBlog: async (id: number): Promise<boolean> => {
-        const dbResult = await blogsRepository.blogs.deleteOne({id: id.toString()})
+    deleteBlog: async (id: string): Promise<boolean> => {
+        const dbResult = await blogsRepository.blogs.deleteOne({id: id})
         return dbResult.deletedCount === 1
     }
 }

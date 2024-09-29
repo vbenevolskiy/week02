@@ -42,7 +42,7 @@ postsRouter.post('/',
     })
 postsRouter.get('/:id',
     async (req: RequestURI<PostsQueryModel>, res: ResponseBody<PostViewModel>) => {
-        const result = await postsRepository.getPostById(Number(req.params.id))
+        const result = await postsRepository.getPostById(req.params.id)
         if (result) res.status(200).json(result)
         else res.sendStatus(404)
     })
@@ -54,7 +54,7 @@ postsRouter.put('/:id',
     postBlogIDValidator,
     checkValidationResults,
     async (req:RequestURIBody<PostsQueryModel, PostInputModel>, res: ResponseBody<never | APIErrorResult>) => {
-        const updateResult: boolean = await postsRepository.updatePost(Number(req.params.id), req)
+        const updateResult: boolean = await postsRepository.updatePost(req.params.id, req)
         if (updateResult) {
             res.sendStatus(204)
         }
@@ -63,7 +63,7 @@ postsRouter.put('/:id',
 postsRouter.delete('/:id',
     authMiddleware,
     async (req:RequestURI<PostsQueryModel>, res:Response)=>{
-        const deleteResult: boolean = await postsRepository.deletePost(Number(req.params.id))
+        const deleteResult: boolean = await postsRepository.deletePost(req.params.id)
         if (deleteResult)
             res.sendStatus(204)
         else res.sendStatus(404)

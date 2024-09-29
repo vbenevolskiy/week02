@@ -18,7 +18,7 @@ exports.postsRepository = {
         return exports.postsRepository.posts.find({}).toArray();
     }),
     getPostById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield exports.postsRepository.posts.findOne({ id: id.toString() });
+        return yield exports.postsRepository.posts.findOne({ id: id });
     }),
     createPost: (req) => __awaiter(void 0, void 0, void 0, function* () {
         const now = new Date();
@@ -31,7 +31,7 @@ exports.postsRepository = {
             shortDescription: req.body.shortDescription,
             content: req.body.content,
             blogId: req.body.blogId,
-            blogName: yield blogs_db_repository_1.blogsRepository.getBlogNameById(Number(req.body.blogId)),
+            blogName: yield blogs_db_repository_1.blogsRepository.getBlogNameById(req.body.blogId),
             createdAt: now.toISOString(),
         };
         yield exports.postsRepository.posts.insertOne(newPost);
@@ -43,14 +43,14 @@ exports.postsRepository = {
                 shortDescription: req.body.shortDescription,
                 content: req.body.content,
                 blogId: req.body.blogId,
-                blogName: yield blogs_db_repository_1.blogsRepository.getBlogNameById(Number(req.body.blogId))
+                blogName: yield blogs_db_repository_1.blogsRepository.getBlogNameById(req.body.blogId)
             }
         };
-        const dbResult = yield exports.postsRepository.posts.updateOne({ id: id.toString() }, newValues);
+        const dbResult = yield exports.postsRepository.posts.updateOne({ id: id }, newValues);
         return dbResult.matchedCount === 1;
     }),
     deletePost: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const dbResult = yield exports.postsRepository.posts.deleteOne({ id: id.toString() });
+        const dbResult = yield exports.postsRepository.posts.deleteOne({ id: id });
         return dbResult.deletedCount === 1;
     })
 };

@@ -35,7 +35,6 @@ export const postBlogIDValidator = body("blogId")
     .withMessage("Blog ID must be a string")
     .trim()
     .custom(async value => {
-        const id = Number(value)
-        const result = await blogsRepository.isValidBlogId(id)
+        const result = await blogsRepository.isValidBlogId(value)
         if (!result) throw new Error("Blog ID is invalid")
     })

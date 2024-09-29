@@ -14,11 +14,11 @@ const db_1 = require("./db");
 exports.blogsRepository = {
     blogs: db_1.dbClient.db(db_1.dbName).collection("blogs"),
     isValidBlogId: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const dbResult = yield exports.blogsRepository.blogs.findOne({ id: id.toString() });
+        const dbResult = yield exports.blogsRepository.blogs.findOne({ id: id });
         return !!dbResult;
     }),
     getBlogNameById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const dbResult = yield exports.blogsRepository.blogs.findOne({ id: id.toString() });
+        const dbResult = yield exports.blogsRepository.blogs.findOne({ id: id });
         if (dbResult)
             return dbResult.name;
         else
@@ -28,7 +28,7 @@ exports.blogsRepository = {
         return exports.blogsRepository.blogs.find({}).toArray();
     }),
     getBlogById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield exports.blogsRepository.blogs.findOne({ id: id.toString() });
+        return yield exports.blogsRepository.blogs.findOne({ id: id });
     }),
     createBlog: (req) => __awaiter(void 0, void 0, void 0, function* () {
         const now = new Date();
@@ -44,15 +44,16 @@ exports.blogsRepository = {
             isMembership: false
         };
         yield exports.blogsRepository.blogs.insertOne(newBlog);
+        console.log(newBlog);
         return newBlog;
     }),
     updateBlog: (id, req) => __awaiter(void 0, void 0, void 0, function* () {
         const newValues = { $set: { name: req.body.name, description: req.body.description, websiteUrl: req.body.websiteUrl } };
-        const dbResult = yield exports.blogsRepository.blogs.updateOne({ id: id.toString() }, newValues);
+        const dbResult = yield exports.blogsRepository.blogs.updateOne({ id: id }, newValues);
         return dbResult.matchedCount === 1;
     }),
     deleteBlog: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const dbResult = yield exports.blogsRepository.blogs.deleteOne({ id: id.toString() });
+        const dbResult = yield exports.blogsRepository.blogs.deleteOne({ id: id });
         return dbResult.deletedCount === 1;
     })
 };

@@ -43,8 +43,7 @@ exports.postBlogIDValidator = (0, express_validator_1.body)("blogId")
     .withMessage("Blog ID must be a string")
     .trim()
     .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = Number(value);
-    const result = yield blogs_db_repository_1.blogsRepository.isValidBlogId(id);
+    const result = yield blogs_db_repository_1.blogsRepository.isValidBlogId(value);
     if (!result)
         throw new Error("Blog ID is invalid");
 }));
