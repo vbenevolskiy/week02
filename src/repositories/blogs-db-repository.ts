@@ -1,9 +1,18 @@
 import {BlogInputModel, BlogViewModel, RequestBody} from "../types";
 import {dbClient, dbName} from "./db";
-import {Collection} from 'mongodb'
+import {Collection, ObjectId} from 'mongodb'
+
+export type BlogDBModel = {
+    _id: ObjectId
+    name: string
+    description: string
+    websiteUrl: string
+    createdAt: string
+    isMembership: boolean
+}
 
 export type BlogsRepository = {
-    blogs: Collection<BlogViewModel>,
+    blogs: Collection<BlogDBModel>,
     isValidBlogId: (id: string) => Promise<boolean>,
     getBlogNameById: (id: string) => Promise<string>,
     getAllBlogs: () => Promise<BlogViewModel[]>,
@@ -14,53 +23,73 @@ export type BlogsRepository = {
 }
 
 export const blogsRepository: BlogsRepository = {
-    blogs: dbClient.db(dbName).collection<BlogViewModel>("blogs"),
+    blogs: dbClient.db(dbName).collection<BlogDBModel>("blogs"),
 
     isValidBlogId: async (id: string): Promise<boolean> => {
-        const dbResult: BlogViewModel | null = await blogsRepository.blogs.findOne({id:id})
+        const dbResult: BlogDBModel | null = await blogsRepository.blogs.findOne({_id:new ObjectId(id)})
         return !!dbResult
     },
 
     getBlogNameById: async (id: string): Promise<string> => {
-        const dbResult: BlogViewModel | null  = await blogsRepository.blogs.findOne({id: id})
+        const dbResult: BlogDBModel | null  = await blogsRepository.blogs.findOne({_id: new ObjectId(id)})
         if (dbResult) return dbResult.name
         else return ""
     },
 
     getAllBlogs: async (): Promise<BlogViewModel[]> => {
-        return blogsRepository.blogs.find({}).toArray()
+        const dbResult: BlogDBModel[] = await blogsRepository.blogs.find({}).toArray()
+        return dbResult.map(el => {
+            return {
+                id: el._id.toString(),
+                name: el.name,
+                description: el.description,
+                websiteUrl: el.websiteUrl,
+                createdAt: el.createdAt,
+                isMembership: el.isMembership
+            }
+        });
     },
 
     getBlogById: async (id: string): Promise<BlogViewModel | null> => {
-        return await blogsRepository.blogs.findOne({id:id})
+        const dbResult: BlogDBModel | null = await blogsRepository.blogs.findOne({_id:new ObjectId(id)})
+        if (dbResult) return {
+            id: dbResult._id.toString(),
+            name: dbResult.name,
+            description: dbResult.description,
+            websiteUrl: dbResult.websiteUrl,
+            createdAt: dbResult.createdAt,
+            isMembership: dbResult.isMembership
+        }
+        return null
     },
 
     createBlog: async (req: RequestBody<BlogInputModel>): Promise<BlogViewModel> => {
-        const now = new Date();
-        const min = Math.ceil(12);
-        const max = Math.floor(97);
-        const rand = Math.floor(Math.random() * (max - min + 1)) + min;
-        const newBlog: BlogViewModel = {
-            id: Number(now).toString()+rand.toString(),
-            name: req.body.name,
-            description: req.body.description,
-            websiteUrl: req.body.websiteUrl,
-            createdAt: now.toISOString(),
-            isMembership: false
+        const newBlog: BlogDBModel = {
+            _id: new ObjectId(),
+            createdAt: (new Date()).toISOString(),
+            isMembership: false,
+            ...req.body
         }
-        await blogsRepository.blogs.insertOne(newBlog)
-        console.log(newBlog)
-        return newBlog
+        const res = await blogsRepository.blogs.insertOne(newBlog)
+        const dbResult = await blogsRepository.blogs.findOne({_id: res.insertedId})
+        return {
+            id: dbResult!._id.toString(),
+            name: dbResult!.name,
+            description: dbResult!.description,
+            websiteUrl: dbResult!.websiteUrl,
+            createdAt: dbResult!.createdAt,
+            isMembership: dbResult!.isMembership
+        }
     },
 
     updateBlog: async (id: string, req: RequestBody<BlogInputModel>): Promise<boolean> => {
         const newValues = {$set: {name: req.body.name, description: req.body.description, websiteUrl: req.body.websiteUrl}}
-        const dbResult = await blogsRepository.blogs.updateOne({id: id},newValues)
+        const dbResult = await blogsRepository.blogs.updateOne({_id: new ObjectId(id)},newValues)
         return dbResult.matchedCount === 1
     },
 
     deleteBlog: async (id: string): Promise<boolean> => {
-        const dbResult = await blogsRepository.blogs.deleteOne({id: id})
+        const dbResult = await blogsRepository.blogs.deleteOne({_id: new ObjectId(id)})
         return dbResult.deletedCount === 1
     }
 }

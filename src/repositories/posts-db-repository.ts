@@ -1,10 +1,20 @@
 import {PostInputModel, PostViewModel, RequestBody} from "../types"
 import {dbClient, dbName} from "./db"
-import {Collection} from 'mongodb'
+import {Collection, ObjectId} from 'mongodb'
 import {blogsRepository} from "./blogs-db-repository"
 
+export type PostDBModel = {
+    _id: ObjectId
+    title: string
+    shortDescription: string
+    content: string
+    blogId: ObjectId
+    blogName: string
+    createdAt: string
+}
+
 export type PostsRepository = {
-    posts: Collection<PostViewModel>,
+    posts: Collection<PostDBModel>,
     getAllPosts: () => Promise<PostViewModel[]>,
     getPostById: (id: string) => Promise<PostViewModel | null>,
     createPost: (req: RequestBody<PostInputModel>) => Promise<PostViewModel>,
@@ -14,32 +24,58 @@ export type PostsRepository = {
 
 
 export const postsRepository:PostsRepository = {
-    posts: dbClient.db(dbName).collection<PostViewModel>("posts"),
+    posts: dbClient.db(dbName).collection<PostDBModel>("posts"),
 
     getAllPosts: async (): Promise<PostViewModel[]> => {
-        return postsRepository.posts.find({}).toArray()
+        const dbResult: PostDBModel[] = await postsRepository.posts.find({}).toArray()
+        return dbResult.map(el =>{
+            return {
+                id: el._id.toString(),
+                title: el.title,
+                shortDescription: el.shortDescription,
+                content: el.content,
+                blogId: el.blogId.toString(),
+                blogName: el.blogName,
+                createdAt: el.createdAt
+            }
+        })
     },
 
     getPostById: async (id: string): Promise<PostViewModel | null> => {
-        return await postsRepository.posts.findOne({id: id})
+        const dbResult = await postsRepository.posts.findOne({_id: new ObjectId(id)})
+        if (dbResult) return {
+            id: dbResult._id.toString(),
+            title: dbResult.title,
+            shortDescription: dbResult.shortDescription,
+            content: dbResult.content,
+            blogId: dbResult.blogId.toString(),
+            blogName: dbResult.blogName,
+            createdAt: dbResult.createdAt
+        }
+        return null
     },
 
     createPost: async (req: RequestBody<PostInputModel>): Promise<PostViewModel> => {
-        const now = new Date()
-        const min = Math.ceil(12);
-        const max = Math.floor(97);
-        const rand = Math.floor(Math.random() * (max - min + 1)) + min;
-        const newPost: PostViewModel = {
-            id: Number(now).toString()+rand.toString(),
+        const newPost: PostDBModel = {
+            _id: new ObjectId(),
             title: req.body.title,
             shortDescription: req.body.shortDescription,
             content: req.body.content,
-            blogId: req.body.blogId,
+            blogId: new ObjectId(req.body.blogId),
             blogName: await blogsRepository.getBlogNameById(req.body.blogId),
-            createdAt: now.toISOString(),
+            createdAt: (new Date()).toISOString()
         }
-        await postsRepository.posts.insertOne(newPost)
-        return newPost
+        const insertResult = await postsRepository.posts.insertOne(newPost)
+        const dbResult = await postsRepository.posts.findOne({_id: insertResult.insertedId})
+        return {
+            id: dbResult!._id.toString(),
+            title: dbResult!.title,
+            shortDescription: dbResult!.shortDescription,
+            content: dbResult!.content,
+            blogId: dbResult!.blogId.toString(),
+            blogName: dbResult!.blogName,
+            createdAt: dbResult!.createdAt
+        }
     },
 
     updatePost: async (id: string, req: RequestBody<PostInputModel>): Promise<boolean> => {
@@ -47,16 +83,16 @@ export const postsRepository:PostsRepository = {
                 $set: {title: req.body.title,
                     shortDescription: req.body.shortDescription,
                     content: req.body.content,
-                    blogId: req.body.blogId,
+                    blogId: new ObjectId(req.body.blogId),
                     blogName: await blogsRepository.getBlogNameById(req.body.blogId)
             }
         }
-        const dbResult = await postsRepository.posts.updateOne({id: id}, newValues)
+        const dbResult = await postsRepository.posts.updateOne({_id: new ObjectId(id)}, newValues)
         return dbResult.matchedCount === 1
     },
 
     deletePost: async (id: string): Promise<boolean> => {
-        const dbResult = await postsRepository.posts.deleteOne({id: id})
+        const dbResult = await postsRepository.posts.deleteOne({_id: new ObjectId(id)})
         return dbResult.deletedCount === 1
     }
 }

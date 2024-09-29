@@ -11,46 +11,74 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsRepository = void 0;
 const db_1 = require("./db");
+const mongodb_1 = require("mongodb");
 const blogs_db_repository_1 = require("./blogs-db-repository");
 exports.postsRepository = {
     posts: db_1.dbClient.db(db_1.dbName).collection("posts"),
     getAllPosts: () => __awaiter(void 0, void 0, void 0, function* () {
-        return exports.postsRepository.posts.find({}).toArray();
+        const dbResult = yield exports.postsRepository.posts.find({}).toArray();
+        return dbResult.map(el => {
+            return {
+                id: el._id.toString(),
+                title: el.title,
+                shortDescription: el.shortDescription,
+                content: el.content,
+                blogId: el.blogId.toString(),
+                blogName: el.blogName,
+                createdAt: el.createdAt
+            };
+        });
     }),
     getPostById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield exports.postsRepository.posts.findOne({ id: id });
+        const dbResult = yield exports.postsRepository.posts.findOne({ _id: new mongodb_1.ObjectId(id) });
+        if (dbResult)
+            return {
+                id: dbResult._id.toString(),
+                title: dbResult.title,
+                shortDescription: dbResult.shortDescription,
+                content: dbResult.content,
+                blogId: dbResult.blogId.toString(),
+                blogName: dbResult.blogName,
+                createdAt: dbResult.createdAt
+            };
+        return null;
     }),
     createPost: (req) => __awaiter(void 0, void 0, void 0, function* () {
-        const now = new Date();
-        const min = Math.ceil(12);
-        const max = Math.floor(97);
-        const rand = Math.floor(Math.random() * (max - min + 1)) + min;
         const newPost = {
-            id: Number(now).toString() + rand.toString(),
+            _id: new mongodb_1.ObjectId(),
             title: req.body.title,
             shortDescription: req.body.shortDescription,
             content: req.body.content,
-            blogId: req.body.blogId,
+            blogId: new mongodb_1.ObjectId(req.body.blogId),
             blogName: yield blogs_db_repository_1.blogsRepository.getBlogNameById(req.body.blogId),
-            createdAt: now.toISOString(),
+            createdAt: (new Date()).toISOString()
         };
-        yield exports.postsRepository.posts.insertOne(newPost);
-        return newPost;
+        const insertResult = yield exports.postsRepository.posts.insertOne(newPost);
+        const dbResult = yield exports.postsRepository.posts.findOne({ _id: insertResult.insertedId });
+        return {
+            id: dbResult._id.toString(),
+            title: dbResult.title,
+            shortDescription: dbResult.shortDescription,
+            content: dbResult.content,
+            blogId: dbResult.blogId.toString(),
+            blogName: dbResult.blogName,
+            createdAt: dbResult.createdAt
+        };
     }),
     updatePost: (id, req) => __awaiter(void 0, void 0, void 0, function* () {
         const newValues = {
             $set: { title: req.body.title,
                 shortDescription: req.body.shortDescription,
                 content: req.body.content,
-                blogId: req.body.blogId,
+                blogId: new mongodb_1.ObjectId(req.body.blogId),
                 blogName: yield blogs_db_repository_1.blogsRepository.getBlogNameById(req.body.blogId)
             }
         };
-        const dbResult = yield exports.postsRepository.posts.updateOne({ id: id }, newValues);
+        const dbResult = yield exports.postsRepository.posts.updateOne({ _id: new mongodb_1.ObjectId(id) }, newValues);
         return dbResult.matchedCount === 1;
     }),
     deletePost: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const dbResult = yield exports.postsRepository.posts.deleteOne({ id: id });
+        const dbResult = yield exports.postsRepository.posts.deleteOne({ _id: new mongodb_1.ObjectId(id) });
         return dbResult.deletedCount === 1;
     })
 };
