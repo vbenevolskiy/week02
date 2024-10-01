@@ -1,7 +1,7 @@
 import {MongoClient} from 'mongodb';
 import {SETTINGS} from "../settings";
 
-const mongoURI: string = process.env.MONGO_URI || 'mongodb+srv://vvb:q123Q123!!@vbcluster.y0j19.mongodb.net/?retryWrites=true&w=majority&appName=vbcluster';
+const mongoURI: string = process.env.MONGO_URI || SETTINGS.MONGO_URI;
 
 export const dbName: string = process.env.DB_NAME || SETTINGS.DB_NAME;
 

@@ -1,4 +1,5 @@
 import {Request, Response} from "express";
+import {ObjectId} from "mongodb";
 
 export type RequestURI<U> = Request<U>
 
@@ -53,6 +54,25 @@ export type PostViewModel = {
     shortDescription: string
     content: string
     blogId: string
+    blogName: string
+    createdAt: string
+}
+
+export type BlogDBModel = {
+    _id: ObjectId
+    name: string
+    description: string
+    websiteUrl: string
+    createdAt: string
+    isMembership: boolean
+}
+
+export type PostDBModel = {
+    _id: ObjectId
+    title: string
+    shortDescription: string
+    content: string
+    blogId: ObjectId
     blogName: string
     createdAt: string
 }

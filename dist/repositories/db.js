@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConnectDB = exports.dbClient = exports.dbName = void 0;
 const mongodb_1 = require("mongodb");
 const settings_1 = require("../settings");
-const mongoURI = process.env.MONGO_URI || 'mongodb+srv://vvb:q123Q123!!@vbcluster.y0j19.mongodb.net/?retryWrites=true&w=majority&appName=vbcluster';
+const mongoURI = process.env.MONGO_URI || settings_1.SETTINGS.MONGO_URI;
 exports.dbName = process.env.DB_NAME || settings_1.SETTINGS.DB_NAME;
 exports.dbClient = new mongodb_1.MongoClient(mongoURI);
 const ConnectDB = () => __awaiter(void 0, void 0, void 0, function* () {

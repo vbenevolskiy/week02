@@ -1,84 +1,53 @@
-import {BlogInputModel, BlogViewModel, RequestBody} from "../types";
 import {dbClient, dbName} from "./db";
 import {Collection, ObjectId} from 'mongodb'
-
-export type BlogDBModel = {
-    _id: ObjectId
-    name: string
-    description: string
-    websiteUrl: string
-    createdAt: string
-    isMembership: boolean
-}
+import {BlogDBModel} from "../types";
+import {SETTINGS} from "../settings";
 
 export type BlogsRepository = {
     blogs: Collection<BlogDBModel>,
-    db2View: (el: BlogDBModel) => BlogViewModel,
-    isValidBlogId: (id: string) => Promise<boolean>,
-    getBlogNameById: (id: string) => Promise<string>,
-    getAllBlogs: () => Promise<BlogViewModel[]>,
-    getBlogById: (id: string) => Promise<BlogViewModel | null>,
-    createBlog: (req: RequestBody<BlogInputModel>) => Promise<BlogViewModel>,
-    updateBlog: (id: string, req: RequestBody<BlogInputModel>) => Promise<boolean>,
-    deleteBlog: (id: string) => Promise<boolean>
+    isValidBlogId: (id: ObjectId) => Promise<boolean>,
+    getBlogNameById: (id: ObjectId) => Promise<string | null>,
+    getAllBlogs: () => Promise<BlogDBModel[]>,
+    getBlogById: (id: ObjectId) => Promise<BlogDBModel | null>,
+    createBlog: (newBlog: BlogDBModel) => Promise<ObjectId>,
+    updateBlog: (id: ObjectId, blog: Partial<BlogDBModel>) => Promise<boolean>,
+    deleteBlog: (id: ObjectId) => Promise<boolean>
 }
 
 export const blogsRepository: BlogsRepository = {
-    blogs: dbClient.db(dbName).collection<BlogDBModel>("blogs"),
+    blogs: dbClient.db(dbName).collection<BlogDBModel>(SETTINGS.COLLECTIONS.BLOGS),
 
-    db2View: (el:BlogDBModel):BlogViewModel =>{
-        return {
-            id: el._id.toString(),
-            name: el.name,
-            description: el.description,
-            websiteUrl: el.websiteUrl,
-            createdAt: el.createdAt,
-            isMembership: el.isMembership
-        }
-    },
-
-    isValidBlogId: async (id: string): Promise<boolean> => {
-        const dbResult: BlogDBModel | null = await blogsRepository.blogs.findOne({_id:new ObjectId(id)})
+    isValidBlogId: async (id: ObjectId): Promise<boolean> => {
+        const dbResult: BlogDBModel | null = await blogsRepository.blogs.findOne({_id:id})
         return !!dbResult
     },
 
-    getBlogNameById: async (id: string): Promise<string> => {
-        const dbResult: BlogDBModel | null  = await blogsRepository.blogs.findOne({_id: new ObjectId(id)})
-        if (dbResult) return dbResult.name
-        else return ""
+    getBlogNameById: async (id: ObjectId): Promise<string | null> => {
+        const dbResult = await blogsRepository.blogs.findOne({_id: id})
+        return dbResult ? dbResult.name : null
     },
 
-    getAllBlogs: async (): Promise<BlogViewModel[]> => {
-        const dbResult: BlogDBModel[] = await blogsRepository.blogs.find({}).toArray()
-        return dbResult.map(el => blogsRepository.db2View(el));
+    getAllBlogs: async (): Promise<BlogDBModel[]> => {
+        return blogsRepository.blogs.find({}).toArray()
     },
 
-    getBlogById: async (id: string): Promise<BlogViewModel | null> => {
-        const dbResult: BlogDBModel | null = await blogsRepository.blogs.findOne({_id:new ObjectId(id)})
-        if (dbResult) return blogsRepository.db2View(dbResult)
-        return null
+    getBlogById: async (id: ObjectId): Promise<BlogDBModel | null> => {
+        return blogsRepository.blogs.findOne({_id:id})
     },
 
-    createBlog: async (req: RequestBody<BlogInputModel>): Promise<BlogViewModel> => {
-        const newBlog: BlogDBModel = {
-            _id: new ObjectId(),
-            createdAt: (new Date()).toISOString(),
-            isMembership: false,
-            ...req.body
-        }
-        const res = await blogsRepository.blogs.insertOne(newBlog)
-        const dbResult = await blogsRepository.blogs.findOne({_id: res.insertedId})
-        return blogsRepository.db2View(dbResult!)
+    createBlog: async (newBlog: BlogDBModel): Promise<ObjectId> => {
+        const dbResult = await blogsRepository.blogs.insertOne(newBlog)
+        return await dbResult.insertedId
     },
 
-    updateBlog: async (id: string, req: RequestBody<BlogInputModel>): Promise<boolean> => {
-        const newValues = {$set: {name: req.body.name, description: req.body.description, websiteUrl: req.body.websiteUrl}}
-        const dbResult = await blogsRepository.blogs.updateOne({_id: new ObjectId(id)},newValues)
+    updateBlog: async (id: ObjectId, blog: Partial<BlogDBModel>): Promise<boolean> => {
+        const newValues = {$set: blog}
+        const dbResult = await blogsRepository.blogs.updateOne({_id: id},newValues)
         return dbResult.matchedCount === 1
     },
 
-    deleteBlog: async (id: string): Promise<boolean> => {
-        const dbResult = await blogsRepository.blogs.deleteOne({_id: new ObjectId(id)})
+    deleteBlog: async (id: ObjectId): Promise<boolean> => {
+        const dbResult = await blogsRepository.blogs.deleteOne({_id: id})
         return dbResult.deletedCount === 1
     }
 }

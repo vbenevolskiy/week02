@@ -11,53 +11,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogsRepository = void 0;
 const db_1 = require("./db");
-const mongodb_1 = require("mongodb");
+const settings_1 = require("../settings");
 exports.blogsRepository = {
-    blogs: db_1.dbClient.db(db_1.dbName).collection("blogs"),
-    db2View: (el) => {
-        return {
-            id: el._id.toString(),
-            name: el.name,
-            description: el.description,
-            websiteUrl: el.websiteUrl,
-            createdAt: el.createdAt,
-            isMembership: el.isMembership
-        };
-    },
+    blogs: db_1.dbClient.db(db_1.dbName).collection(settings_1.SETTINGS.COLLECTIONS.BLOGS),
     isValidBlogId: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: new mongodb_1.ObjectId(id) });
+        const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: id });
         return !!dbResult;
     }),
     getBlogNameById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: new mongodb_1.ObjectId(id) });
-        if (dbResult)
-            return dbResult.name;
-        else
-            return "";
+        const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: id });
+        return dbResult ? dbResult.name : null;
     }),
     getAllBlogs: () => __awaiter(void 0, void 0, void 0, function* () {
-        const dbResult = yield exports.blogsRepository.blogs.find({}).toArray();
-        return dbResult.map(el => exports.blogsRepository.db2View(el));
+        return exports.blogsRepository.blogs.find({}).toArray();
     }),
     getBlogById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: new mongodb_1.ObjectId(id) });
-        if (dbResult)
-            return exports.blogsRepository.db2View(dbResult);
-        return null;
+        return exports.blogsRepository.blogs.findOne({ _id: id });
     }),
-    createBlog: (req) => __awaiter(void 0, void 0, void 0, function* () {
-        const newBlog = Object.assign({ _id: new mongodb_1.ObjectId(), createdAt: (new Date()).toISOString(), isMembership: false }, req.body);
-        const res = yield exports.blogsRepository.blogs.insertOne(newBlog);
-        const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: res.insertedId });
-        return exports.blogsRepository.db2View(dbResult);
+    createBlog: (newBlog) => __awaiter(void 0, void 0, void 0, function* () {
+        const dbResult = yield exports.blogsRepository.blogs.insertOne(newBlog);
+        return yield dbResult.insertedId;
     }),
-    updateBlog: (id, req) => __awaiter(void 0, void 0, void 0, function* () {
-        const newValues = { $set: { name: req.body.name, description: req.body.description, websiteUrl: req.body.websiteUrl } };
-        const dbResult = yield exports.blogsRepository.blogs.updateOne({ _id: new mongodb_1.ObjectId(id) }, newValues);
+    updateBlog: (id, blog) => __awaiter(void 0, void 0, void 0, function* () {
+        const newValues = { $set: blog };
+        const dbResult = yield exports.blogsRepository.blogs.updateOne({ _id: id }, newValues);
         return dbResult.matchedCount === 1;
     }),
     deleteBlog: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const dbResult = yield exports.blogsRepository.blogs.deleteOne({ _id: new mongodb_1.ObjectId(id) });
+        const dbResult = yield exports.blogsRepository.blogs.deleteOne({ _id: id });
         return dbResult.deletedCount === 1;
     })
 };

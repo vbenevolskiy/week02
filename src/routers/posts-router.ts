@@ -10,60 +10,42 @@ import {
     ResponseBody
 } from "../types"
 
-import {
-    postBlogIDValidator,
-    postContentValidator,
-    postShortDescriptionValidator,
-    postTitleValidator
-} from "../validators/posts-validator"
+import {postsService} from "../services/posts-service";
 
-import {checkValidationResults} from "../validators/validation-results"
-
-import {postsRepository} from "../repositories/posts-db-repository";
-import {authMiddleware} from "../validators/auth";
+import {postsDeleteMiddleware, postsPostMiddleware, postsPutMiddleware} from "../middleware/posts-middleware";
 
 export const postsRouter = Router()
 
 postsRouter.get('/',
     async (req: Request, res: ResponseBody<PostViewModel[]>) => {
-        const result = await postsRepository.getAllPosts()
+        const result = await postsService.getAllPosts()
         res.status(200).json(result)
     })
 postsRouter.post('/',
-    authMiddleware,
-    postTitleValidator,
-    postShortDescriptionValidator,
-    postContentValidator,
-    postBlogIDValidator,
-    checkValidationResults,
+    postsPostMiddleware,
     async (req: RequestBody<PostInputModel>, res:ResponseBody<PostViewModel | APIErrorResult>) => {
-        const result = await postsRepository.createPost(req)
+        const result = await postsService.createPost(req)
         return res.status(201).json(result)
     })
 postsRouter.get('/:id',
     async (req: RequestURI<PostsQueryModel>, res: ResponseBody<PostViewModel>) => {
-        const result = await postsRepository.getPostById(req.params.id)
+        const result = await postsService.getPostById(req.params.id)
         if (result) res.status(200).json(result)
         else res.sendStatus(404)
     })
 postsRouter.put('/:id',
-    authMiddleware,
-    postTitleValidator,
-    postShortDescriptionValidator,
-    postContentValidator,
-    postBlogIDValidator,
-    checkValidationResults,
+    postsPutMiddleware,
     async (req:RequestURIBody<PostsQueryModel, PostInputModel>, res: ResponseBody<never | APIErrorResult>) => {
-        const updateResult: boolean = await postsRepository.updatePost(req.params.id, req)
+        const updateResult: boolean = await postsService.updatePost(req.params.id, req)
         if (updateResult) {
             res.sendStatus(204)
         }
         else res.sendStatus(404)
     })
 postsRouter.delete('/:id',
-    authMiddleware,
+    postsDeleteMiddleware,
     async (req:RequestURI<PostsQueryModel>, res:Response)=>{
-        const deleteResult: boolean = await postsRepository.deletePost(req.params.id)
+        const deleteResult: boolean = await postsService.deletePost(req.params.id)
         if (deleteResult)
             res.sendStatus(204)
         else res.sendStatus(404)
