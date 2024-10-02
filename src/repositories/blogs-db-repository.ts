@@ -1,13 +1,14 @@
 import {dbClient, dbName} from "./db";
 import {Collection, ObjectId} from 'mongodb'
-import {BlogDBModel} from "../types";
+import {BlogDBModel, BlogsQueryOptions} from "../types";
 import {SETTINGS} from "../settings";
 
 export type BlogsRepository = {
     blogs: Collection<BlogDBModel>,
+    getTotalCount: (filter: Object) => Promise<number>,
     isValidBlogId: (id: ObjectId) => Promise<boolean>,
     getBlogNameById: (id: ObjectId) => Promise<string | null>,
-    getAllBlogs: () => Promise<BlogDBModel[]>,
+    getAllBlogs: (blogsQueryOptions: BlogsQueryOptions) => Promise<BlogDBModel[]>,
     getBlogById: (id: ObjectId) => Promise<BlogDBModel | null>,
     createBlog: (newBlog: BlogDBModel) => Promise<ObjectId>,
     updateBlog: (id: ObjectId, blog: Partial<BlogDBModel>) => Promise<boolean>,
@@ -15,7 +16,12 @@ export type BlogsRepository = {
 }
 
 export const blogsRepository: BlogsRepository = {
+
     blogs: dbClient.db(dbName).collection<BlogDBModel>(SETTINGS.COLLECTIONS.BLOGS),
+
+    getTotalCount: async (filter:Object): Promise<number> => {
+        return await blogsRepository.blogs.countDocuments(filter)
+    },
 
     isValidBlogId: async (id: ObjectId): Promise<boolean> => {
         const dbResult: BlogDBModel | null = await blogsRepository.blogs.findOne({_id:id})
@@ -27,8 +33,15 @@ export const blogsRepository: BlogsRepository = {
         return dbResult ? dbResult.name : null
     },
 
-    getAllBlogs: async (): Promise<BlogDBModel[]> => {
-        return blogsRepository.blogs.find({}).toArray()
+    getAllBlogs: async (blogsQueryOptions: BlogsQueryOptions): Promise<BlogDBModel[]> => {
+        const toSkip : number = (blogsQueryOptions.pageNumber-1) * blogsQueryOptions.pageSize
+        return blogsRepository
+            .blogs
+            .find(blogsQueryOptions.searchFilter)
+            .sort(blogsQueryOptions.sortFilter)
+            .skip(toSkip)
+            .limit(blogsQueryOptions.pageSize)
+            .toArray()
     },
 
     getBlogById: async (id: ObjectId): Promise<BlogDBModel | null> => {
@@ -37,7 +50,7 @@ export const blogsRepository: BlogsRepository = {
 
     createBlog: async (newBlog: BlogDBModel): Promise<ObjectId> => {
         const dbResult = await blogsRepository.blogs.insertOne(newBlog)
-        return await dbResult.insertedId
+        return dbResult.insertedId;
     },
 
     updateBlog: async (id: ObjectId, blog: Partial<BlogDBModel>): Promise<boolean> => {

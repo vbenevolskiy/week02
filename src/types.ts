@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
-import {ObjectId} from "mongodb";
+import {ObjectId, Sort} from "mongodb";
 
 export type RequestURI<U> = Request<U>
+
+export type RequestURIQuery<U, Q> = Request<Partial<U>, Partial<Q>>
 
 export type RequestBody<B> = Request<{},{},B>
 
@@ -9,11 +11,40 @@ export type RequestURIBody<U, B> = Request<U, {}, B>
 
 export type ResponseBody<B> = Response<B>
 
-export type BlogsQueryModel = {
+export type BlogsURIModel = {
     id: string
 }
 
-export type PostsQueryModel = {
+export type BlogsQueryInputModel = {
+    searchNameTerm: string | null
+    sortBy: string
+    sortDirection: 'asc' | 'desc'
+    pageNumber: number
+    pageSize: number
+}
+
+export type BlogsQueryOptions = {
+    searchFilter: Object
+    sortFilter: Sort,
+    pageNumber: number
+    pageSize: number
+}
+
+export type PostsQueryInputModel = {
+    sortBy: string
+    sortDirection: 'asc' | 'desc'
+    pageNumber: number
+    pageSize: number
+}
+
+export type PostsQueryOptions = {
+    searchFilter: Object
+    sortFilter: Sort
+    pageNumber: number
+    pageSize: number
+}
+
+export type PostsURIModel = {
     id: string
 }
 
@@ -75,4 +106,20 @@ export type PostDBModel = {
     blogId: ObjectId
     blogName: string
     createdAt: string
+}
+
+export type BlogsPaginator= {
+    pagesCount:	number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: BlogViewModel[]
+}
+
+export type PostsPaginator= {
+    pagesCount:	number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: PostViewModel[]
 }

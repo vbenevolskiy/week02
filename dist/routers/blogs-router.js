@@ -13,13 +13,22 @@ exports.blogsRouter = void 0;
 const express_1 = require("express");
 const blogs_service_1 = require("../services/blogs-service");
 const blogs_middleware_1 = require("../middleware/blogs-middleware");
+const posts_service_1 = require("../services/posts-service");
 exports.blogsRouter = (0, express_1.Router)({});
 exports.blogsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield blogs_service_1.blogsService.getAllBlogs();
+    const result = yield blogs_service_1.blogsService.getAllBlogs(req);
+    res.status(200).json(result);
+}));
+exports.blogsRouter.get('/:id/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield blogs_service_1.blogsService.getAllBlogs(req);
     res.status(200).json(result);
 }));
 exports.blogsRouter.post('/', blogs_middleware_1.blogsPostMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield blogs_service_1.blogsService.createBlog(req);
+    return res.status(201).json(result);
+}));
+exports.blogsRouter.post('/:id/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield posts_service_1.postsService.createPostWithID(req);
     return res.status(201).json(result);
 }));
 exports.blogsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

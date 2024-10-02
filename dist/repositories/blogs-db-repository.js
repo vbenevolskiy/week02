@@ -14,6 +14,9 @@ const db_1 = require("./db");
 const settings_1 = require("../settings");
 exports.blogsRepository = {
     blogs: db_1.dbClient.db(db_1.dbName).collection(settings_1.SETTINGS.COLLECTIONS.BLOGS),
+    getTotalCount: (filter) => __awaiter(void 0, void 0, void 0, function* () {
+        return yield exports.blogsRepository.blogs.countDocuments(filter);
+    }),
     isValidBlogId: (id) => __awaiter(void 0, void 0, void 0, function* () {
         const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: id });
         return !!dbResult;
@@ -22,15 +25,22 @@ exports.blogsRepository = {
         const dbResult = yield exports.blogsRepository.blogs.findOne({ _id: id });
         return dbResult ? dbResult.name : null;
     }),
-    getAllBlogs: () => __awaiter(void 0, void 0, void 0, function* () {
-        return exports.blogsRepository.blogs.find({}).toArray();
+    getAllBlogs: (blogsQueryOptions) => __awaiter(void 0, void 0, void 0, function* () {
+        const toSkip = (blogsQueryOptions.pageNumber - 1) * blogsQueryOptions.pageSize;
+        return exports.blogsRepository
+            .blogs
+            .find(blogsQueryOptions.searchFilter)
+            .sort(blogsQueryOptions.sortFilter)
+            .skip(toSkip)
+            .limit(blogsQueryOptions.pageSize)
+            .toArray();
     }),
     getBlogById: (id) => __awaiter(void 0, void 0, void 0, function* () {
         return exports.blogsRepository.blogs.findOne({ _id: id });
     }),
     createBlog: (newBlog) => __awaiter(void 0, void 0, void 0, function* () {
         const dbResult = yield exports.blogsRepository.blogs.insertOne(newBlog);
-        return yield dbResult.insertedId;
+        return dbResult.insertedId;
     }),
     updateBlog: (id, blog) => __awaiter(void 0, void 0, void 0, function* () {
         const newValues = { $set: blog };

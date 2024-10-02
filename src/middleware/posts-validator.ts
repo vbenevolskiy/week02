@@ -1,5 +1,5 @@
 import {body} from "express-validator"
-import {blogsRepository} from "../repositories/blogs-db-repository";
+import {blogsService} from "../services/blogs-service";
 
 export const postTitleValidator = body("title")
     .not().isEmpty()
@@ -35,6 +35,6 @@ export const postBlogIDValidator = body("blogId")
     .withMessage("Blog ID must be a string")
     .trim()
     .custom(async value => {
-        const result = await blogsRepository.isValidBlogId(value)
+        const result = await blogsService.isValidBlogId(value)
         if (!result) throw new Error("Blog ID is invalid")
     })

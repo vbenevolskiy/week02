@@ -15,7 +15,7 @@ const posts_service_1 = require("../services/posts-service");
 const posts_middleware_1 = require("../middleware/posts-middleware");
 exports.postsRouter = (0, express_1.Router)();
 exports.postsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield posts_service_1.postsService.getAllPosts();
+    const result = yield posts_service_1.postsService.getAllPosts(req);
     res.status(200).json(result);
 }));
 exports.postsRouter.post('/', posts_middleware_1.postsPostMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

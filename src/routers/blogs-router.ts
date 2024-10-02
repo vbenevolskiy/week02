@@ -1,39 +1,61 @@
-import {Request, Response, Router} from 'express'
+import {Response, Router} from 'express'
 import {
+    PostViewModel,
     APIErrorResult,
     BlogInputModel,
-    BlogsQueryModel,
+    BlogsPaginator,
+    BlogsQueryInputModel,
+    BlogsURIModel,
     BlogViewModel,
+    PostsURIModel,
+    PostInputModel,
     RequestBody,
     RequestURI,
     RequestURIBody,
+    RequestURIQuery,
     ResponseBody
 } from "../types"
 import {blogsService} from "../services/blogs-service";
 import {blogsPostMiddleware, blogsPutMiddleware, blogsDeleteMiddleware} from "../middleware/blogs-middleware";
+import {postsService} from "../services/posts-service";
 
 export const blogsRouter = Router({})
 
 blogsRouter.get('/',
-    async (req: Request, res: Response<BlogViewModel[]>) => {
-        const result = await blogsService.getAllBlogs()
+    async (req: RequestURIQuery<BlogsURIModel, BlogsQueryInputModel>, res: Response<BlogsPaginator>) => {
+        const result = await blogsService.getAllBlogs(req)
         res.status(200).json(result)
     })
+
+blogsRouter.get('/:id/posts',
+    async (req: RequestURIQuery<BlogsURIModel, BlogsQueryInputModel>, res: Response<BlogsPaginator>) => {
+    const result = await blogsService.getAllBlogs(req)
+    res.status(200).json(result)
+})
+
 blogsRouter.post('/',
     blogsPostMiddleware,
     async (req: RequestBody<BlogInputModel>, res: ResponseBody<BlogViewModel | APIErrorResult>) => {
         const result = await blogsService.createBlog(req)
         return res.status(201).json(result)
     })
+
+blogsRouter.post('/:id/posts',
+    async (req: RequestURIBody<PostsURIModel, PostInputModel>, res: ResponseBody<PostViewModel | APIErrorResult>) => {
+        const result = await postsService.createPostWithID(req)
+        return res.status(201).json(result)
+    } )
+
 blogsRouter.get('/:id',
-    async (req: RequestURI<BlogsQueryModel>, res: ResponseBody<BlogViewModel>)=>{
+    async (req: RequestURI<BlogsURIModel>, res: ResponseBody<BlogViewModel>)=>{
         const result = await blogsService.getBlogById(req.params.id)
         if (result) res.status(200).json(result)
         else res.sendStatus(404)
     })
+
 blogsRouter.put('/:id',
     blogsPutMiddleware,
-    async (req: RequestURIBody<BlogsQueryModel,BlogInputModel>, res:ResponseBody<never | APIErrorResult>)=>{
+    async (req: RequestURIBody<BlogsURIModel,BlogInputModel>, res:ResponseBody<never | APIErrorResult>)=>{
         const updateResult: boolean = await blogsService.updateBlog(req.params.id, req)
         if (updateResult)
             res.sendStatus(204)
@@ -41,7 +63,7 @@ blogsRouter.put('/:id',
     })
 blogsRouter.delete('/:id',
     blogsDeleteMiddleware,
-    async (req: RequestURI<BlogsQueryModel>, res:Response)=>{
+    async (req: RequestURI<BlogsURIModel>, res:Response)=>{
         const deleteResult: boolean = await blogsService.deleteBlog(req.params.id)
         if (deleteResult)
             res.sendStatus(204)
