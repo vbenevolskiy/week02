@@ -40,9 +40,9 @@ export const blogsService: BlogsService = {
         const idTerm: string = req.params.id ? req.params.id : ""
         const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm : null
         let filter = {}
-        if (idTerm && searchNameTerm) filter = {'$regex': searchNameTerm, _id: new ObjectId(idTerm), '$options': 'i'}
+        if (idTerm && searchNameTerm) filter = {name : {'$regex': searchNameTerm, '$options': 'i'}, _id: new ObjectId(idTerm)}
         else if (idTerm && !searchNameTerm) filter = {_id: new ObjectId(idTerm)}
-        else if (searchNameTerm && !idTerm) filter = {'$regex': searchNameTerm, '$options': 'i'}
+        else if (searchNameTerm && !idTerm) filter = {name: {'$regex': searchNameTerm, '$options': 'i'}}
         return {
             searchFilter: filter,
             sortFilter: sortDirection === 'desc' ? {[sortBy]: -1} : {[sortBy]: 1},
