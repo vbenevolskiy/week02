@@ -5,9 +5,9 @@ config()
 export const SETTINGS = {
     PORT: process.env.PORT || 5000,
     PATH: {
-        BLOGS: '/hometask_03/api/blogs',
-        POSTS: '/hometask_03/api/posts',
-        TESTING: '/hometask_03/api/testing/all-data',
+        BLOGS: '/hometask_04/api/blogs',
+        POSTS: '/hometask_04/api/posts',
+        TESTING: '/hometask_04/api/testing/all-data',
     },
     COLLECTIONS: {
         BLOGS: 'blogs',
