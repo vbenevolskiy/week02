@@ -81,6 +81,7 @@ export const postsService:PostsService = {
     },
 
     createPostWithID: async (req: RequestURIBody<PostsURIModel, PostInputModel>): Promise<PostViewModel> => {
+        console.log(req)
         // @ts-ignore
         const blogName: string = await blogsService.getBlogNameById(req.params.id)
         const newPost: PostDBModel = {

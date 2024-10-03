@@ -30,10 +30,7 @@ blogsRouter.get('/',
 
 blogsRouter.get('/:id/posts',
     async (req: RequestURIQuery<BlogsURIModel, BlogsQueryInputModel>, res: Response<BlogsPaginator>) => {
-    if (!req.params.id) {
-        return res.sendStatus(404)
-    }
-    const validID = await blogsService.isValidBlogId(req.params.id)
+    const validID = await blogsService.isValidBlogId(req.params.id!)
     if (!validID) return res.sendStatus(404)
     const result = await blogsService.getAllBlogs(req)
     res.status(200).json(result)
@@ -49,9 +46,6 @@ blogsRouter.post('/',
 blogsRouter.post('/:id/posts',
     postsPostMiddlewareWithoutBlogID,
     async (req: RequestURIBody<PostsURIModel, PostInputModel>, res: ResponseBody<PostViewModel | APIErrorResult>) => {
-        if (!req.params.id) {
-            return res.sendStatus(404)
-        }
         const validID = await blogsService.isValidBlogId(req.params.id)
         if (!validID) return res.sendStatus(404)
         const result = await postsService.createPostWithID(req)
