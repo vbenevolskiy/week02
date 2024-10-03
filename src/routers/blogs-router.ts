@@ -42,6 +42,9 @@ blogsRouter.post('/',
 
 blogsRouter.post('/:id/posts',
     async (req: RequestURIBody<PostsURIModel, PostInputModel>, res: ResponseBody<PostViewModel | APIErrorResult>) => {
+        if (!req.params.id) {
+            return res.sendStatus(404)
+        }
         const result = await postsService.createPostWithID(req)
         return res.status(201).json(result)
     } )
