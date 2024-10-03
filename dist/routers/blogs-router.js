@@ -24,7 +24,7 @@ exports.blogsRouter.get('/:id/posts', (req, res) => __awaiter(void 0, void 0, vo
     const validID = yield blogs_service_1.blogsService.isValidBlogId(req.params.id);
     if (!validID)
         return res.sendStatus(404);
-    const result = yield blogs_service_1.blogsService.getAllBlogs(req);
+    const result = yield posts_service_1.postsService.getAllPosts(req);
     res.status(200).json(result);
 }));
 exports.blogsRouter.post('/', blogs_middleware_1.blogsPostMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

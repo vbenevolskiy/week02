@@ -24,7 +24,7 @@ export type PostsService = {
 export const postsService:PostsService = {
 
     postsQueryOptionsFactory: (req:RequestURIQuery<PostsURIModel, PostsQueryInputModel>): PostsQueryOptions => {
-        const searchFilter = req.params.id ? {_id: new ObjectId(req.params.id)} : {}
+        const searchFilter = req.params.id ? {blogId: new ObjectId(req.params.id)} : {}
         const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
         const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
         return {
