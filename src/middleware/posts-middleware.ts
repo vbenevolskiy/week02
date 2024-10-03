@@ -23,6 +23,13 @@ export const postsPutMiddleware = [
     postBlogIDValidator,
     checkValidationResults,
 ]
+export const postsPostMiddlewareWithoutBlogID = [
+    authMiddleware,
+    postTitleValidator,
+    postShortDescriptionValidator,
+    postContentValidator,
+    checkValidationResults,
+]
 export const postsDeleteMiddleware = [
     authMiddleware,
 ]

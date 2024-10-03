@@ -34,7 +34,7 @@ exports.blogsRouter.post('/', blogs_middleware_1.blogsPostMiddleware, (req, res)
     const result = yield blogs_service_1.blogsService.createBlog(req);
     return res.status(201).json(result);
 }));
-exports.blogsRouter.post('/:id/posts', posts_middleware_1.postsPostMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.blogsRouter.post('/:id/posts', posts_middleware_1.postsPostMiddlewareWithoutBlogID, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.params.id) {
         return res.sendStatus(404);
     }

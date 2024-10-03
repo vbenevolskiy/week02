@@ -18,7 +18,7 @@ import {
 import {blogsService} from "../services/blogs-service";
 import {blogsPostMiddleware, blogsPutMiddleware, blogsDeleteMiddleware} from "../middleware/blogs-middleware";
 import {postsService} from "../services/posts-service";
-import {postsPostMiddleware} from "../middleware/posts-middleware";
+import {postsPostMiddlewareWithoutBlogID} from "../middleware/posts-middleware";
 
 export const blogsRouter = Router({})
 
@@ -47,7 +47,7 @@ blogsRouter.post('/',
     })
 
 blogsRouter.post('/:id/posts',
-    postsPostMiddleware,
+    postsPostMiddlewareWithoutBlogID,
     async (req: RequestURIBody<PostsURIModel, PostInputModel>, res: ResponseBody<PostViewModel | APIErrorResult>) => {
         if (!req.params.id) {
             return res.sendStatus(404)
