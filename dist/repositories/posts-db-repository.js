@@ -18,12 +18,12 @@ exports.postsRepository = {
         return yield exports.postsRepository.posts.countDocuments(filter);
     }),
     getAllPosts: (postsQueryOptions) => __awaiter(void 0, void 0, void 0, function* () {
-        const toSkip = (postsQueryOptions.pageNumber - 1) * postsQueryOptions.pageSize;
+        console.log(postsQueryOptions);
         return exports.postsRepository
             .posts
-            .find({})
+            .find(postsQueryOptions.searchFilter)
             .sort(postsQueryOptions.sortFilter)
-            .skip(toSkip)
+            .skip((postsQueryOptions.pageNumber - 1) * postsQueryOptions.pageSize)
             .limit(postsQueryOptions.pageSize)
             .toArray();
     }),

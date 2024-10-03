@@ -51,6 +51,7 @@ export const postsService:PostsService = {
         const postsQueryOptions = postsService.postsQueryOptionsFactory(req)
         const totalCount: number = await postsRepository.getTotalCount(postsQueryOptions.searchFilter)
         const dbResult: PostDBModel[] = await postsRepository.getAllPosts(postsQueryOptions)
+        console.log(dbResult)
         return {
             pagesCount: Math.ceil(totalCount / postsQueryOptions.pageSize),
             page: postsQueryOptions.pageNumber,
@@ -81,7 +82,8 @@ export const postsService:PostsService = {
     },
 
     createPostWithID: async (req: RequestURIBody<PostsURIModel, PostInputModel>): Promise<PostViewModel> => {
-        console.log(req)
+        console.log(`req.body: ${req.body}`)
+        console.log(`id: ${req.params.id}`)
         // @ts-ignore
         const blogName: string = await blogsService.getBlogNameById(req.params.id)
         const newPost: PostDBModel = {

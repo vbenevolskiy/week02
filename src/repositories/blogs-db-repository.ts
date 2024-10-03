@@ -34,12 +34,12 @@ export const blogsRepository: BlogsRepository = {
     },
 
     getAllBlogs: async (blogsQueryOptions: BlogsQueryOptions): Promise<BlogDBModel[]> => {
-        const toSkip : number = (blogsQueryOptions.pageNumber-1) * blogsQueryOptions.pageSize
+        // const toSkip : number = (blogsQueryOptions.pageNumber-1) * blogsQueryOptions.pageSize
         return blogsRepository
             .blogs
             .find(blogsQueryOptions.searchFilter)
             .sort(blogsQueryOptions.sortFilter)
-            .skip(toSkip)
+            .skip((blogsQueryOptions.pageNumber-1) * blogsQueryOptions.pageSize)
             .limit(blogsQueryOptions.pageSize)
             .toArray()
     },

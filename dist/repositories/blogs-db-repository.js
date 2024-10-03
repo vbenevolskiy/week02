@@ -26,12 +26,12 @@ exports.blogsRepository = {
         return dbResult ? dbResult.name : null;
     }),
     getAllBlogs: (blogsQueryOptions) => __awaiter(void 0, void 0, void 0, function* () {
-        const toSkip = (blogsQueryOptions.pageNumber - 1) * blogsQueryOptions.pageSize;
+        // const toSkip : number = (blogsQueryOptions.pageNumber-1) * blogsQueryOptions.pageSize
         return exports.blogsRepository
             .blogs
             .find(blogsQueryOptions.searchFilter)
             .sort(blogsQueryOptions.sortFilter)
-            .skip(toSkip)
+            .skip((blogsQueryOptions.pageNumber - 1) * blogsQueryOptions.pageSize)
             .limit(blogsQueryOptions.pageSize)
             .toArray();
     }),

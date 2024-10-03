@@ -22,12 +22,12 @@ export const postsRepository:PostsRepository = {
     },
 
     getAllPosts: async (postsQueryOptions): Promise<PostDBModel[]> => {
-        const toSkip : number = (postsQueryOptions.pageNumber-1) * postsQueryOptions.pageSize
+        console.log(postsQueryOptions)
         return postsRepository
             .posts
-            .find({})
+            .find(postsQueryOptions.searchFilter)
             .sort(postsQueryOptions.sortFilter)
-            .skip(toSkip)
+            .skip((postsQueryOptions.pageNumber-1) * postsQueryOptions.pageSize)
             .limit(postsQueryOptions.pageSize)
             .toArray()
     },
