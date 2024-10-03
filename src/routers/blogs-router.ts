@@ -29,6 +29,9 @@ blogsRouter.get('/',
 
 blogsRouter.get('/:id/posts',
     async (req: RequestURIQuery<BlogsURIModel, BlogsQueryInputModel>, res: Response<BlogsPaginator>) => {
+    if (!req.params.id) {
+        return res.sendStatus(404)
+    }
     const result = await blogsService.getAllBlogs(req)
     res.status(200).json(result)
 })
