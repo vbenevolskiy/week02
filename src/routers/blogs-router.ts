@@ -9,6 +9,7 @@ import {
     BlogViewModel,
     PostsURIModel,
     PostInputModel,
+    PostsPaginator,
     RequestBody,
     RequestURI,
     RequestURIBody,
@@ -29,10 +30,10 @@ blogsRouter.get('/',
     })
 
 blogsRouter.get('/:id/posts',
-    async (req: RequestURIQuery<BlogsURIModel, BlogsQueryInputModel>, res: Response<BlogsPaginator>) => {
+    async (req: RequestURIQuery<BlogsURIModel, BlogsQueryInputModel>, res: Response<PostsPaginator>) => {
     const validID = await blogsService.isValidBlogId(req.params.id!)
     if (!validID) return res.sendStatus(404)
-    const result = await blogsService.getAllBlogs(req)
+    const result = await postsService.getAllPosts(req)
     res.status(200).json(result)
 })
 
