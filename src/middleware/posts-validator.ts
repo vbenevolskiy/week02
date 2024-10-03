@@ -1,4 +1,4 @@
-import {body} from "express-validator"
+import {body, param} from "express-validator"
 import {blogsService} from "../services/blogs-service";
 
 export const postTitleValidator = body("title")
@@ -38,3 +38,5 @@ export const postBlogIDValidator = body("blogId")
         const result = await blogsService.isValidBlogId(value)
         if (!result) throw new Error("Blog ID is invalid")
     })
+
+

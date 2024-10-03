@@ -18,6 +18,7 @@ import {
 import {blogsService} from "../services/blogs-service";
 import {blogsPostMiddleware, blogsPutMiddleware, blogsDeleteMiddleware} from "../middleware/blogs-middleware";
 import {postsService} from "../services/posts-service";
+import {postsPostMiddleware} from "../middleware/posts-middleware";
 
 export const blogsRouter = Router({})
 
@@ -32,6 +33,8 @@ blogsRouter.get('/:id/posts',
     if (!req.params.id) {
         return res.sendStatus(404)
     }
+    const validID = await blogsService.isValidBlogId(req.params.id)
+    if (!validID) return res.sendStatus(404)
     const result = await blogsService.getAllBlogs(req)
     res.status(200).json(result)
 })
@@ -44,10 +47,13 @@ blogsRouter.post('/',
     })
 
 blogsRouter.post('/:id/posts',
+    postsPostMiddleware,
     async (req: RequestURIBody<PostsURIModel, PostInputModel>, res: ResponseBody<PostViewModel | APIErrorResult>) => {
         if (!req.params.id) {
             return res.sendStatus(404)
         }
+        const validID = await blogsService.isValidBlogId(req.params.id)
+        if (!validID) return res.sendStatus(404)
         const result = await postsService.createPostWithID(req)
         return res.status(201).json(result)
     } )

@@ -14,6 +14,7 @@ const express_1 = require("express");
 const blogs_service_1 = require("../services/blogs-service");
 const blogs_middleware_1 = require("../middleware/blogs-middleware");
 const posts_service_1 = require("../services/posts-service");
+const posts_middleware_1 = require("../middleware/posts-middleware");
 exports.blogsRouter = (0, express_1.Router)({});
 exports.blogsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield blogs_service_1.blogsService.getAllBlogs(req);
@@ -23,6 +24,9 @@ exports.blogsRouter.get('/:id/posts', (req, res) => __awaiter(void 0, void 0, vo
     if (!req.params.id) {
         return res.sendStatus(404);
     }
+    const validID = yield blogs_service_1.blogsService.isValidBlogId(req.params.id);
+    if (!validID)
+        return res.sendStatus(404);
     const result = yield blogs_service_1.blogsService.getAllBlogs(req);
     res.status(200).json(result);
 }));
@@ -30,10 +34,13 @@ exports.blogsRouter.post('/', blogs_middleware_1.blogsPostMiddleware, (req, res)
     const result = yield blogs_service_1.blogsService.createBlog(req);
     return res.status(201).json(result);
 }));
-exports.blogsRouter.post('/:id/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.blogsRouter.post('/:id/posts', posts_middleware_1.postsPostMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.params.id) {
         return res.sendStatus(404);
     }
+    const validID = yield blogs_service_1.blogsService.isValidBlogId(req.params.id);
+    if (!validID)
+        return res.sendStatus(404);
     const result = yield posts_service_1.postsService.createPostWithID(req);
     return res.status(201).json(result);
 }));
