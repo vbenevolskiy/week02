@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = require("./app");
 const settings_1 = require("./settings");
-const db_1 = require("./repositories/db");
+const db_1 = require("./db");
 const port = process.env.PORT || settings_1.SETTINGS.PORT || 4000;
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, db_1.ConnectDB)();

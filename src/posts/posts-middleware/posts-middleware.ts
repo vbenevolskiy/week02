@@ -1,11 +1,18 @@
-import {authMiddleware} from "./auth";
+import {authMiddleware} from "../../common-middleware/auth";
 import {
     postBlogIDValidator,
     postContentValidator,
-    postShortDescriptionValidator,
+    postShortDescriptionValidator, postsQueryPageNumber, postsQueryPageSize, postsQuerySortBy, postsQuerySortDirection,
     postTitleValidator
 } from "./posts-validator";
-import {checkValidationResults} from "./validation-results";
+import {checkValidationResults} from "../../common-middleware/validation-results";
+
+export const postsGetMiddleware = [
+    postsQueryPageNumber,
+    postsQueryPageSize,
+    postsQuerySortBy,
+    postsQuerySortDirection
+]
 
 export const postsPostMiddleware = [
     authMiddleware,

@@ -1,6 +1,6 @@
 import {app} from "./app"
 import {SETTINGS} from "./settings";
-import {ConnectDB} from "./repositories/db";
+import {ConnectDB} from "./db";
 
 const port = process.env.PORT || SETTINGS.PORT || 4000
 

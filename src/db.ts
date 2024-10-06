@@ -1,5 +1,5 @@
 import {MongoClient} from 'mongodb';
-import {SETTINGS} from "../settings";
+import {SETTINGS} from "./settings";
 
 const mongoURI: string = process.env.MONGO_URI || SETTINGS.MONGO_URI;
 
