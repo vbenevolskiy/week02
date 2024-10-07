@@ -3,7 +3,7 @@ import {checkValidationResults} from "../../common-middleware/validation-results
 import {
     usersEmailValidator,
     usersLoginValidator,
-    usersParamIdValidator,
+    // usersParamIdValidator,
     usersPasswordValidator,
     usersQueryPageNumber,
     usersQueryPageSize,

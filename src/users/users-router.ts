@@ -3,9 +3,7 @@ import {usersGetMiddleware, usersPostMiddleware, usersDeleteMiddleware} from "./
 import {usersQueryRepo} from "./users-repositories/users-query-repo";
 import {RequestBody, RequestQuery, RequestURI, ResponseBody} from "../common-types/request-types";
 import {UserInputModel, UsersPaginator, UsersQueryInputModel, UsersURIParams, UserViewModel} from "./users-types";
-import {PostInputModel} from "../posts/posts-types";
 import {usersService} from "./users-service";
-import {postsService} from "../posts/posts-service";
 import {APIErrorResult} from "../common-types/errors-types";
 
 export const usersRouter = Router();
@@ -47,7 +45,9 @@ usersRouter.post("/",
          email: req.body.email.toLowerCase(),
       }
       const user = await usersService.createUser(newUser)
-      return res.status(201).json(user)
+      //@ts-ignore
+      if (user.login) return res.status(201).json(user)
+      return res.status(400).json(user)
    })
 
 usersRouter.delete("/:id",

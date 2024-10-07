@@ -85,6 +85,7 @@ blogsRouter.post('/:id/posts',
    postsPostMiddlewareWithoutBlogID,
    async (req: RequestURIBody<PostsURIModel, PostInputModel>, res: ResponseBody<PostViewModel | APIErrorResult>) => {
       req.body.blogId = req.params.id
+      if (!await blogsService.isValidBlogId(req.params.id)) return res.sendStatus(404)
       const newPost: PostInputModel = {
          title: req.body.title,
          shortDescription: req.body.shortDescription,

@@ -25,12 +25,12 @@ export const usersRepo: UsersRepo = {
 
    isValidUserLogin: async (login: string): Promise<boolean> => {
       const dbResult: UserDBModel | null = await usersRepo.users.findOne({login: login.toLowerCase()});
-      return !!dbResult
+      return !dbResult
    },
 
    isValidUserEmail: async (email: string): Promise<boolean> => {
       const dbResult: UserDBModel | null = await usersRepo.users.findOne({email: email.toLowerCase()});
-      return !!dbResult
+      return !dbResult
    },
 
    getUserById: async (id: ObjectId): Promise<UserViewModel | null> => {

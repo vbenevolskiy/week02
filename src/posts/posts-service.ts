@@ -2,7 +2,6 @@ import {PostDBModel, PostInputModel, PostViewModel} from "./posts-types";
 import {postsRepo} from "./posts-repositories/posts-repo";
 import {blogsService} from "../blogs/blogs-service";
 import {ObjectId} from "mongodb";
-import {postDBToPostViewMapper} from "./posts-mappers";
 
 export type PostsService = {
     getPostById: (id: string) => Promise<PostViewModel | null>,
@@ -19,7 +18,7 @@ export const postsService:PostsService = {
 
     createPost: async (post: PostInputModel): Promise<PostViewModel> => {
         // @ts-ignore
-        const blogName: string = await blogsService.getBlogNameById(req.body.blogId)
+        const blogName: string = await blogsService.getBlogNameById(post.blogId)
         const newPost: PostDBModel = {
             _id: new ObjectId(),
             title: post.title,
@@ -36,7 +35,7 @@ export const postsService:PostsService = {
 
     updatePost: async (id: string, post: PostInputModel): Promise<boolean> => {
         // @ts-ignore
-        const blogName: string = await blogsService.getBlogNameById(req.body.blogId)
+        const blogName: string = await blogsService.getBlogNameById(post.blogId)
         const newValues: Partial<PostDBModel> = {
             title: post.title,
             shortDescription: post.shortDescription,

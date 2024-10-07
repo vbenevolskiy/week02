@@ -1,5 +1,4 @@
-import {body, query, param} from "express-validator"
-import {ObjectId} from "mongodb";
+import {body, query} from "express-validator"
 
 export const usersQuerySortBy = query("sortBy")
    .customSanitizer(value => value ? value : 'createdAt')
@@ -19,8 +18,8 @@ export const usersQuerySearchNameTerm = query("searchNameTerm")
 export const usersQuerySearchEmailTerm = query("searchEmailTerm")
    .customSanitizer(value => value ? value : null)
 
-export const usersParamIdValidator = param("id")
-   .customSanitizer(value => new ObjectId(value))
+// export const usersParamIdValidator = param("id")
+//    .customSanitizer(value => new ObjectId(value))
 
 export const usersLoginValidator = body("login")
    .not().isEmpty()
