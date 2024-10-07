@@ -3,7 +3,6 @@ import {BlogDBModel, BlogsQueryInputModel, BlogViewModel} from "../blogs-types";
 import {dbClient, dbName} from "../../db";
 import {SETTINGS} from "../../settings";
 import {blogDBToBlogViewMapper} from "../blogs-mappers";
-import {usersQueryRepo} from "../../users/users-repositories/users-query-repo";
 
 type BlogsQueryRepo = {
    blogs: Collection<BlogDBModel>
@@ -28,7 +27,7 @@ export const blogsQueryRepo:BlogsQueryRepo = {
    },
 
    isValidBlogID: async (id: ObjectId): Promise<boolean> => {
-      const dbResult = await usersQueryRepo.users.findOne({_id: id})
+      const dbResult = await blogsQueryRepo.blogs.findOne({_id: id})
       return !!dbResult
    },
 

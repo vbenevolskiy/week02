@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 
 export type RequestURI<U> = Request<U>
 
-export type RequestURIQuery<U, Q> = Request<Partial<U>, Partial<Q>>
+export type RequestURIQuery<U, Q> = Request<Partial<U>, {}, {}, Partial<Q>>
 
 export type RequestQuery<Q> = Request<{},Partial<Q>>
 

@@ -21,10 +21,11 @@ export const usersQueryRepo:UsersQueryRepo = {
 
    searchFilterFactory: (qOptions: UsersQueryInputModel): Object => {
       if (!qOptions.searchEmailTerm && !qOptions.searchLoginTerm) return {}
-      if (qOptions.searchLoginTerm && qOptions.searchEmailTerm) return {
-         login: {'$regex': qOptions.searchLoginTerm, '$options': 'i'},
-         email: {'$regex': qOptions.searchEmailTerm, '$options': 'i'}
-      }
+      if (qOptions.searchLoginTerm && qOptions.searchEmailTerm)
+         return {$or:[
+            {login: {$regex: qOptions.searchLoginTerm, $options: 'i'}},
+            {email: {$regex: qOptions.searchEmailTerm, $options: 'i'}}
+         ]}
       if (qOptions.searchLoginTerm) return {
          login: {'$regex': qOptions.searchLoginTerm, '$options': 'i'}
       }
@@ -38,13 +39,13 @@ export const usersQueryRepo:UsersQueryRepo = {
    },
 
    validateUserLoginOrEmail: async (loginOrEmail: string): Promise<ObjectId | null> => {
-      if (loginOrEmail.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-         const dbResultEmail = await usersQueryRepo.users.findOne({email: loginOrEmail.toLowerCase()})
-         if (dbResultEmail) return dbResultEmail._id
-         else return null
-      }
-      const dbResultLogin = await usersQueryRepo.users.findOne({login: loginOrEmail.toLowerCase()})
-      if (dbResultLogin) return dbResultLogin._id
+      const searchTerm = loginOrEmail.toLowerCase();
+      const filter: Object = {$or:[
+            {email: searchTerm},
+            {login: searchTerm}
+         ]}
+      const dbResult = await usersQueryRepo.users.findOne(filter)
+      if (dbResult) return dbResult._id
       return null
    },
 
