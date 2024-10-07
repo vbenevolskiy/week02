@@ -35,24 +35,17 @@ export const usersService: UsersService = {
          pwdHash: pwdHash,
          createdAt: new Date().toISOString()
       }
-      if (!await usersRepo.isValidUserLogin(user.login)) {
-         const response: APIErrorResult = {
-            errorsMessages: [{
-               message: `Login is not unique`,
-               field: 'login'
-            }]
-         }
-         return response
+      if (!await usersRepo.isValidUserLogin(user.login)) return {
+         errorsMessages: [{
+            message: `Login is not unique`,
+            field: 'login'
+         }]
       }
-      if (!await usersRepo.isValidUserEmail(user.email)) {
-         const response: APIErrorResult = {
-            errorsMessages: [{
-               message: `Email address is not unique`,
-               field: 'email'
-            }
-            ]
-         }
-         return response
+      if (!await usersRepo.isValidUserEmail(user.email)) return {
+         errorsMessages: [{
+            message: `Email address is not unique`,
+            field: 'email'
+         }]
       }
       const userId = await usersRepo.createUser(user)
       // @ts-ignore
