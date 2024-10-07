@@ -1,13 +1,15 @@
-import {Collection, Sort} from "mongodb";
+import {Collection, ObjectId, Sort} from "mongodb";
 import {BlogDBModel, BlogsQueryInputModel, BlogViewModel} from "../blogs-types";
 import {dbClient, dbName} from "../../db";
 import {SETTINGS} from "../../settings";
 import {blogDBToBlogViewMapper} from "../blogs-mappers";
+import {usersQueryRepo} from "../../users/users-repositories/users-query-repo";
 
 type BlogsQueryRepo = {
    blogs: Collection<BlogDBModel>
    searchFilterFactory: (qOptions: BlogsQueryInputModel) => Object
    sortFilterFactory: (qOptions: BlogsQueryInputModel) => Sort
+   isValidBlogID: (id: ObjectId) => Promise<boolean>
    getTotalCount: (qOptions: BlogsQueryInputModel) => Promise<number>
    getAllBlogs: (qOptions: BlogsQueryInputModel) => Promise<BlogViewModel[]>
 }
@@ -23,6 +25,11 @@ export const blogsQueryRepo:BlogsQueryRepo = {
 
    sortFilterFactory: (qOptions: BlogsQueryInputModel): Sort => {
       return qOptions.sortDirection === 'desc' ? {[qOptions.sortBy]: -1} : {[qOptions.sortBy]: 1}
+   },
+
+   isValidBlogID: async (id: ObjectId): Promise<boolean> => {
+      const dbResult = await usersQueryRepo.users.findOne({_id: id})
+      return !!dbResult
    },
 
    getTotalCount: async (qOptions: BlogsQueryInputModel): Promise<number> => {

@@ -14,6 +14,7 @@ import {postsService} from "../posts/posts-service";
 import {postsGetMiddleware, postsPostMiddlewareWithoutBlogID} from "../posts/posts-middleware/posts-middleware";
 import {blogsQueryRepo} from "./blogs-repositories/blogs-query-repo";
 import {postsQueryRepo} from "../posts/posts-repositories/posts-query-repo";
+import {ObjectId} from "mongodb";
 
 export const blogsRouter = Router({})
 
@@ -58,6 +59,7 @@ blogsRouter.get('/:id/posts',
          pageSize: req.query.pageSize,
          blogId: req.params.id!
       }
+      if (!await blogsQueryRepo.isValidBlogID(new ObjectId(req.params.id))) return res.sendStatus(404)
       const totalCount = await postsQueryRepo.getTotalCount(qOptions)
       const paginator: PostsPaginator = {
          pagesCount: Math.ceil(totalCount / qOptions.pageSize),
