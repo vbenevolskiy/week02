@@ -1,13 +1,16 @@
-import {Collection, Sort} from "mongodb";
+import {Collection, Sort, ObjectId} from "mongodb";
 import {UserDBModel, UsersQueryInputModel, UserViewModel} from "../users-types";
 import {dbClient, dbName} from "../../db";
 import {SETTINGS} from "../../settings";
 import {userDBToUserViewMapper} from "../users-mappers";
+import bcrypt from 'bcrypt'
 
 type UsersQueryRepo = {
    users: Collection<UserDBModel>
    searchFilterFactory: (usersQueryOptions: UsersQueryInputModel) => Object
    sortFilterFactory: (usersQueryOptions: UsersQueryInputModel) => Sort
+   validateUserLoginOrEmail: (loginOrEmail: string) => Promise<ObjectId | null>
+   validateUserPassword: (userId: ObjectId, password: string) => Promise<boolean>
    getTotalCount: (usersQueryOptions: UsersQueryInputModel) => Promise<number>
    getAllUsers: (usersQueryOptions: UsersQueryInputModel) => Promise<UserViewModel[]>
 }
@@ -32,6 +35,23 @@ export const usersQueryRepo:UsersQueryRepo = {
 
    sortFilterFactory: (qOptions: UsersQueryInputModel): Sort => {
       return qOptions.sortDirection === 'desc' ? {[qOptions.sortBy]: -1} : {[qOptions.sortBy]: 1}
+   },
+
+   validateUserLoginOrEmail: async (loginOrEmail: string): Promise<ObjectId | null> => {
+      if (loginOrEmail.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+         const dbResultEmail = await usersQueryRepo.users.findOne({email: loginOrEmail.toLowerCase()})
+         if (dbResultEmail) return dbResultEmail._id
+         else return null
+      }
+      const dbResultLogin = await usersQueryRepo.users.findOne({login: loginOrEmail.toLowerCase()})
+      if (dbResultLogin) return dbResultLogin._id
+      return null
+   },
+
+   validateUserPassword: async (userId: ObjectId, password:string): Promise<boolean> => {
+      const user: UserDBModel = <UserDBModel>await usersQueryRepo.users.findOne({_id: userId})
+      const passedHash = await bcrypt.hash(password, user.salt)
+      return passedHash === user.pwdHash
    },
 
    getTotalCount: async (qOptions: UsersQueryInputModel): Promise<number> => {

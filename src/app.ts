@@ -4,6 +4,7 @@ import {postsRouter} from "./posts/posts-router"
 import {testingRouter} from "./testing/testing-router";
 import {SETTINGS} from "./settings"
 import {usersRouter} from "./users/users-router";
+import {authRouter} from "./auth/auth-router";
 
 export const app = express()
 app.use(express.json())
@@ -15,3 +16,4 @@ app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use(SETTINGS.PATH.POSTS, postsRouter)
 app.use(SETTINGS.PATH.TESTING, testingRouter)
 app.use(SETTINGS.PATH.USERS, usersRouter)
+app.use(SETTINGS.PATH.AUTH, authRouter)
