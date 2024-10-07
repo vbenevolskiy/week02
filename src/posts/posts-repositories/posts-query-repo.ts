@@ -1,4 +1,4 @@
-import {Collection, Sort} from "mongodb";
+import {Collection, Sort, ObjectId} from "mongodb";
 import {PostDBModel, PostsQueryInputModel, PostViewModel} from "../posts-types";
 import {dbClient, dbName} from "../../db";
 import {SETTINGS} from "../../settings";
@@ -18,7 +18,7 @@ export const postsQueryRepo:PostsQueryRepo = {
 
    searchFilterFactory: (qOptions: PostsQueryInputModel): Object => {
       if (!qOptions.blogId) return {}
-      return {blogId: qOptions.blogId}
+      return {blogId: new ObjectId(qOptions.blogId)}
 },
 
    sortFilterFactory: (qOptions: PostsQueryInputModel): Sort => {
