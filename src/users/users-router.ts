@@ -12,18 +12,12 @@ usersRouter.get("/",
    usersGetMiddleware,
    async (req: RequestQuery<UsersQueryInputModel>, res: ResponseBody<UsersPaginator>) => {
       const qOptions: UsersQueryInputModel = {
-         //@ts-ignore
-         sortBy: req.query.sortBy,
-        //@ts-ignore
-         sortDirection: req.query.sortDirection,
-        //@ts-ignore
-         pageSize: req.query.pageSize,
-        //@ts-ignore
-         pageNumber: req.query.pageNumber,
-        //@ts-ignore
-         searchEmailTerm: req.query.searchEmailTerm,
-        //@ts-ignore
-         searchLoginTerm: req.query.searchLoginTerm
+         sortBy: req.query.sortBy!,
+         sortDirection: req.query.sortDirection!,
+         pageSize: req.query.pageSize!,
+         pageNumber: req.query.pageNumber!,
+         searchEmailTerm: req.query.searchEmailTerm!,
+         searchLoginTerm: req.query.searchLoginTerm!
       }
       const totalCount = await usersQueryRepo.getTotalCount(qOptions)
       const paginator: UsersPaginator = {

@@ -1,4 +1,4 @@
-import {Request, Response, Router} from 'express'
+import {Response, Router} from 'express'
 import {APIErrorResult} from "../common-types/errors-types";
 import {RequestBody, RequestURI, RequestURIBody, RequestURIQuery, ResponseBody} from "../common-types/request-types";
 import {PostViewModel, PostInputModel, PostsPaginator, PostsQueryInputModel, PostsURIModel} from "./posts-types";
@@ -17,14 +17,10 @@ postsRouter.get('/',
    postsGetMiddleware,
    async (req: RequestURIQuery<PostsURIModel, PostsQueryInputModel>, res: ResponseBody<PostsPaginator>) => {
       const qOptions: PostsQueryInputModel = {
-         //@ts-ignore
-         sortBy: req.query.sortBy,
-         //@ts-ignore
-         sortDirection: req.query.sortDirection,
-         //@ts-ignore
-         pageNumber: req.query.pageNumber,
-         //@ts-ignore
-         pageSize: req.query.pageSize,
+         sortBy: req.query.sortBy!,
+         sortDirection: req.query.sortDirection!,
+         pageNumber: req.query.pageNumber!,
+         pageSize: req.query.pageSize!,
          blogId: null
       }
       const totalCount = await postsQueryRepo.getTotalCount(qOptions)

@@ -49,14 +49,10 @@ blogsRouter.get('/:id/posts',
    postsGetMiddleware,
    async (req: RequestURIQuery<PostsURIModel, PostsQueryInputModel>, res: Response<PostsPaginator>) => {
       const qOptions: PostsQueryInputModel = {
-         //@ts-ignore
-         sortBy: req.query.sortBy,
-         //@ts-ignore
-         sortDirection: req.query.sortDirection,
-         //@ts-ignore
-         pageNumber: req.query.pageNumber,
-         //@ts-ignore
-         pageSize: req.query.pageSize,
+         sortBy: req.query.sortBy!,
+         sortDirection: req.query.sortDirection!,
+         pageNumber: req.query.pageNumber!,
+         pageSize: req.query.pageSize!,
          blogId: req.params.id!
       }
       if (!await blogsQueryRepo.isValidBlogID(new ObjectId(req.params.id))) return res.sendStatus(404)
