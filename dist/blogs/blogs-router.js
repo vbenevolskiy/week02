@@ -17,6 +17,7 @@ const posts_service_1 = require("../posts/posts-service");
 const posts_middleware_1 = require("../posts/posts-middleware/posts-middleware");
 const blogs_query_repo_1 = require("./blogs-repositories/blogs-query-repo");
 const posts_query_repo_1 = require("../posts/posts-repositories/posts-query-repo");
+const mongodb_1 = require("mongodb");
 exports.blogsRouter = (0, express_1.Router)({});
 exports.blogsRouter.get('/', blogs_middleware_1.blogsGetMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const qOptions = {
@@ -43,16 +44,14 @@ exports.blogsRouter.get('/', blogs_middleware_1.blogsGetMiddleware, (req, res) =
 }));
 exports.blogsRouter.get('/:id/posts', posts_middleware_1.postsGetMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const qOptions = {
-        //@ts-ignore
         sortBy: req.query.sortBy,
-        //@ts-ignore
         sortDirection: req.query.sortDirection,
-        //@ts-ignore
         pageNumber: req.query.pageNumber,
-        //@ts-ignore
         pageSize: req.query.pageSize,
         blogId: req.params.id
     };
+    if (!(yield blogs_query_repo_1.blogsQueryRepo.isValidBlogID(new mongodb_1.ObjectId(req.params.id))))
+        return res.sendStatus(404);
     const totalCount = yield posts_query_repo_1.postsQueryRepo.getTotalCount(qOptions);
     const paginator = {
         pagesCount: Math.ceil(totalCount / qOptions.pageSize),

@@ -17,17 +17,11 @@ const users_service_1 = require("./users-service");
 exports.usersRouter = (0, express_1.Router)();
 exports.usersRouter.get("/", users_middleware_1.usersGetMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const qOptions = {
-        //@ts-ignore
         sortBy: req.query.sortBy,
-        //@ts-ignore
         sortDirection: req.query.sortDirection,
-        //@ts-ignore
         pageSize: req.query.pageSize,
-        //@ts-ignore
         pageNumber: req.query.pageNumber,
-        //@ts-ignore
         searchEmailTerm: req.query.searchEmailTerm,
-        //@ts-ignore
         searchLoginTerm: req.query.searchLoginTerm
     };
     const totalCount = yield users_query_repo_1.usersQueryRepo.getTotalCount(qOptions);

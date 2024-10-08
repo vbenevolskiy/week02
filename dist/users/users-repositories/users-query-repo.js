@@ -23,10 +23,10 @@ exports.usersQueryRepo = {
         if (!qOptions.searchEmailTerm && !qOptions.searchLoginTerm)
             return {};
         if (qOptions.searchLoginTerm && qOptions.searchEmailTerm)
-            return {
-                login: { '$regex': qOptions.searchLoginTerm, '$options': 'i' },
-                email: { '$regex': qOptions.searchEmailTerm, '$options': 'i' }
-            };
+            return { $or: [
+                    { login: { $regex: qOptions.searchLoginTerm, $options: 'i' } },
+                    { email: { $regex: qOptions.searchEmailTerm, $options: 'i' } }
+                ] };
         if (qOptions.searchLoginTerm)
             return {
                 login: { '$regex': qOptions.searchLoginTerm, '$options': 'i' }
@@ -39,16 +39,14 @@ exports.usersQueryRepo = {
         return qOptions.sortDirection === 'desc' ? { [qOptions.sortBy]: -1 } : { [qOptions.sortBy]: 1 };
     },
     validateUserLoginOrEmail: (loginOrEmail) => __awaiter(void 0, void 0, void 0, function* () {
-        if (loginOrEmail.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-            const dbResultEmail = yield exports.usersQueryRepo.users.findOne({ email: loginOrEmail.toLowerCase() });
-            if (dbResultEmail)
-                return dbResultEmail._id;
-            else
-                return null;
-        }
-        const dbResultLogin = yield exports.usersQueryRepo.users.findOne({ login: loginOrEmail.toLowerCase() });
-        if (dbResultLogin)
-            return dbResultLogin._id;
+        const searchTerm = loginOrEmail.toLowerCase();
+        const filter = { $or: [
+                { email: searchTerm },
+                { login: searchTerm }
+            ] };
+        const dbResult = yield exports.usersQueryRepo.users.findOne(filter);
+        if (dbResult)
+            return dbResult._id;
         return null;
     }),
     validateUserPassword: (userId, password) => __awaiter(void 0, void 0, void 0, function* () {

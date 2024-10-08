@@ -23,6 +23,10 @@ exports.blogsQueryRepo = {
     sortFilterFactory: (qOptions) => {
         return qOptions.sortDirection === 'desc' ? { [qOptions.sortBy]: -1 } : { [qOptions.sortBy]: 1 };
     },
+    isValidBlogID: (id) => __awaiter(void 0, void 0, void 0, function* () {
+        const dbResult = yield exports.blogsQueryRepo.blogs.findOne({ _id: id });
+        return !!dbResult;
+    }),
     getTotalCount: (qOptions) => __awaiter(void 0, void 0, void 0, function* () {
         return exports.blogsQueryRepo
             .blogs

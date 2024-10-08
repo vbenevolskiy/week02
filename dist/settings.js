@@ -21,7 +21,7 @@ exports.SETTINGS = {
         SALT_ROUNDS: 10
     },
     ADMIN_AUTH: 'admin:qwerty',
-    MONGO_URI: 'mongodb://localhost:27017',
-    //     MONGO_URI: 'mongodb+srv://vvb:q123Q123!!@vbcluster.y0j19.mongodb.net/?retryWrites=true&w=majority&appName=vbcluster',
+    // MONGO_URI: 'mongodb://localhost:27017',
+    MONGO_URI: 'mongodb+srv://vvb:q123Q123!!@vbcluster.y0j19.mongodb.net/?retryWrites=true&w=majority&appName=vbcluster',
     DB_NAME: 'snet'
 };

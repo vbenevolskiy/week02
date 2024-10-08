@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsQueryRepo = void 0;
+const mongodb_1 = require("mongodb");
 const db_1 = require("../../db");
 const settings_1 = require("../../settings");
 const posts_mappers_1 = require("../posts-mappers");
@@ -18,7 +19,7 @@ exports.postsQueryRepo = {
     searchFilterFactory: (qOptions) => {
         if (!qOptions.blogId)
             return {};
-        return { blogId: qOptions.blogId };
+        return { blogId: new mongodb_1.ObjectId(qOptions.blogId) };
     },
     sortFilterFactory: (qOptions) => {
         return qOptions.sortDirection === 'desc' ? { [qOptions.sortBy]: -1 } : { [qOptions.sortBy]: 1 };

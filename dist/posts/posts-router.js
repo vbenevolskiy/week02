@@ -17,13 +17,9 @@ const posts_query_repo_1 = require("./posts-repositories/posts-query-repo");
 exports.postsRouter = (0, express_1.Router)();
 exports.postsRouter.get('/', posts_middleware_1.postsGetMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const qOptions = {
-        //@ts-ignore
         sortBy: req.query.sortBy,
-        //@ts-ignore
         sortDirection: req.query.sortDirection,
-        //@ts-ignore
         pageNumber: req.query.pageNumber,
-        //@ts-ignore
         pageSize: req.query.pageSize,
         blogId: null
     };
