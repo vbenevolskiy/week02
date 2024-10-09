@@ -18,6 +18,12 @@ export type UserViewModel = {
     createdAt: string
 }
 
+export type MeViewModel = {
+    userId: string
+    login: string
+    email: string
+}
+
 export type UserDBModel = {
     _id: ObjectId
     login: string

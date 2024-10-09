@@ -3,11 +3,13 @@ import {PostDBModel, PostsQueryInputModel, PostViewModel} from "../posts-types";
 import {dbClient, dbName} from "../../db";
 import {SETTINGS} from "../../settings";
 import {postDBToPostViewMapper} from "../posts-mappers";
+import {commentsQueryRepo} from "../../comments/comments-repositories/comments-query-repo";
 
 type PostsQueryRepo = {
    posts: Collection<PostDBModel>
    searchFilterFactory: (qOptions: PostsQueryInputModel) => Object
    sortFilterFactory: (qOptions: PostsQueryInputModel) => Sort
+   isValidPostID: (id: ObjectId) => Promise<boolean>
    getTotalCount: (qOptions: PostsQueryInputModel) => Promise<number>
    getAllPosts: (qOptions: PostsQueryInputModel) => Promise<PostViewModel[]>
 }
@@ -23,6 +25,11 @@ export const postsQueryRepo:PostsQueryRepo = {
 
    sortFilterFactory: (qOptions: PostsQueryInputModel): Sort => {
       return qOptions.sortDirection === 'desc' ? {[qOptions.sortBy]: -1} : {[qOptions.sortBy]: 1}
+   },
+
+   isValidPostID: async (id: ObjectId):Promise<boolean> => {
+      const dbResult = await postsQueryRepo.posts.findOne({_id: id});
+      return !!dbResult
    },
 
    getTotalCount: (qOptions: PostsQueryInputModel): Promise<number> => {

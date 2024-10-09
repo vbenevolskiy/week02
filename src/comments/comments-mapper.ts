@@ -5,6 +5,9 @@ export const commentDBToCommentViewMapper = (record: CommentDBModel): CommentVie
       id: record._id.toString(),
       content: record.content,
       createdAt: record.createdAt,
-      commentatorInfo: record.commentatorInfo,
+      commentatorInfo: {
+         userId: record.commentatorInfo.userId.toString(),
+         userLogin: record.commentatorInfo.userLogin
+      },
    }
 }

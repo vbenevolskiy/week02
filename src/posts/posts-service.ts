@@ -3,7 +3,7 @@ import {postsRepo} from "./posts-repositories/posts-repo";
 import {blogsService} from "../blogs/blogs-service";
 import {ObjectId} from "mongodb";
 
-export type PostsService = {
+type PostsService = {
     getPostById: (id: string) => Promise<PostViewModel | null>,
     createPost: (post: PostInputModel) => Promise<PostViewModel>,
     updatePost: (id: string, post: PostInputModel) => Promise<boolean>,

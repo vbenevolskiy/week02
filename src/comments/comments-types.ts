@@ -1,6 +1,10 @@
 import {ObjectId} from "mongodb";
 import {Paginator} from "../common-types/paginator-type";
 
+export type CommentURIModel = {
+   id: string
+}
+
 export type CommentInputModel = {
    content: string
 }
@@ -21,7 +25,10 @@ export type CommentDBModel = {
    _id: ObjectId
    content: string
    createdAt: string
-   commentatorInfo: CommentatorInfoType
+   commentatorInfo: {
+      userId: ObjectId
+      userLogin: string
+   }
    postId: ObjectId
 }
 
@@ -35,4 +42,9 @@ export type CommentsQueryInputModel = {
 
 export type CommentsPaginator = Paginator & {
    items: CommentViewModel[]
+}
+
+export type CommentContext = {
+   userId: string
+   postId: string
 }

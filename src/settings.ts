@@ -5,7 +5,7 @@ config()
 export const SETTINGS = {
     PORT: process.env.PORT || 5000,
     PATH: {
-        AUTH: '/hometask_06/api/auth/login',
+        AUTH: '/hometask_06/api/auth',
         BLOGS: '/hometask_06/api/blogs',
         COMMENTS: '/hometask_06/api/comments',
         POSTS: '/hometask_06/api/posts',
@@ -20,7 +20,7 @@ export const SETTINGS = {
     },
     SECURITY: {
         SALT_ROUNDS: 10,
-        SECRET_KEY: process.env.SECRET_KEY || "interstellar"
+        JWT_SECRET_KEY: process.env.SECRET_KEY || "interstellar"
     },
     ADMIN_AUTH: 'admin:qwerty',
     // MONGO_URI: 'mongodb://localhost:27017',
