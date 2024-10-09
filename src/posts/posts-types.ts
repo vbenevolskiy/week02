@@ -1,4 +1,4 @@
-import {ObjectId, Sort} from "mongodb";
+import {ObjectId} from "mongodb";
 import {Paginator} from "../common-types/paginator-type";
 
 export type PostsQueryInputModel = {
@@ -8,13 +8,6 @@ export type PostsQueryInputModel = {
     pageSize: number
     blogId: string | null
 }
-
-// export type PostsQueryOptions = {
-//     searchFilter: Object
-//     sortFilter: Sort
-//     pageNumber: number
-//     pageSize: number
-// }
 
 export type PostsURIModel = {
     id: string
@@ -36,8 +29,6 @@ export type PostViewModel = {
     blogName: string
     createdAt: string
 }
-
-
 
 export type PostDBModel = {
     _id: ObjectId

@@ -5,19 +5,22 @@ config()
 export const SETTINGS = {
     PORT: process.env.PORT || 5000,
     PATH: {
-        BLOGS: '/hometask_05/api/blogs',
-        POSTS: '/hometask_05/api/posts',
-        USERS: '/hometask_05/api/users',
-        TESTING: '/hometask_05/api/testing/all-data',
-        AUTH: '/hometask_05/api/auth/login'
+        AUTH: '/hometask_06/api/auth/login',
+        BLOGS: '/hometask_06/api/blogs',
+        COMMENTS: '/hometask_06/api/comments',
+        POSTS: '/hometask_06/api/posts',
+        TESTING: '/hometask_06/api/testing/all-data',
+        USERS: '/hometask_06/api/users',
     },
     COLLECTIONS: {
         BLOGS: 'blogs',
+        COMMENTS: 'comments',
         POSTS: 'posts',
         USERS: 'users'
     },
     SECURITY: {
-        SALT_ROUNDS: 10
+        SALT_ROUNDS: 10,
+        SECRET_KEY: process.env.SECRET_KEY || "interstellar"
     },
     ADMIN_AUTH: 'admin:qwerty',
     // MONGO_URI: 'mongodb://localhost:27017',
