@@ -1,4 +1,4 @@
 node_modules
-__tests__
+dist
 .idea
 .env
