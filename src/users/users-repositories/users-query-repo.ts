@@ -56,12 +56,11 @@ export const usersQueryRepo: UsersQueryRepo = {
    },
 
    getUserData: async (userId: ObjectId): Promise<MeViewModel> => {
-
-      const dbResult: UserDBModel =( await usersQueryRepo.users.findOne({_id: new ObjectId(userId)})) as UserDBModel
+      const dbResult: UserDBModel | null =await usersQueryRepo.users.findOne({_id: userId})
       return {
-         userId: dbResult._id!.toString(),
-         login: dbResult.login,
-         email: dbResult.email
+         userId: dbResult!._id.toString(),
+         login: dbResult!.login,
+         email: dbResult!.email
       }
    },
 
