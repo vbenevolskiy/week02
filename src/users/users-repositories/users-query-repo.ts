@@ -56,8 +56,8 @@ export const usersQueryRepo: UsersQueryRepo = {
    },
 
    getUserData: async (userId: ObjectId): Promise<MeViewModel> => {
-      //@ts-ignore
-      const dbResult: UserDBModel = await usersQueryRepo.users.findOne({_ud: new ObjectId(userId)})
+
+      const dbResult: UserDBModel =( await usersQueryRepo.users.findOne({_id: new ObjectId(userId)})) as UserDBModel
       return {
          userId: dbResult._id!.toString(),
          login: dbResult.login,

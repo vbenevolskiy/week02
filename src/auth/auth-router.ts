@@ -5,6 +5,7 @@ import {authPostMiddleware} from "./auth-middleware/auth-middleware";
 import {ObjectId} from "mongodb";
 import {usersQueryRepo} from "../users/users-repositories/users-query-repo";
 import {jwtService} from "./jwt-service";
+import {authBearerMiddleware} from "../common-middleware/auth";
 
 export const authRouter = Router();
 
@@ -18,16 +19,14 @@ authRouter.post("/login",
       const user = await usersQueryRepo.checkUserCredentials(credentials)
       if (!user) return res.sendStatus(401)
       const success: LoginSuccessViewModel = {
-         accessToken: jwtService.createJWTToken(user)
+         accessToken: jwtService.createJWTToken(user._id.toString())
       }
       res.status(200).json(success)
    })
 
 authRouter.get('/me',
+   authBearerMiddleware,
    async (req:Request, res: Response)=>{
-   if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) return res.sendStatus(401)
-   const userId = jwtService.getUserIdByJWTToken(req.headers.authorization.split(' ')[1])
-   if (!userId) return res.sendStatus(401)
-   const result = await usersQueryRepo.getUserData(new ObjectId(userId))
-   return res.sendStatus(200).json(result)
+   const result = await usersQueryRepo.getUserData(new ObjectId(<string>req.headers.userId))
+   return res.status(200).json(result)
 })

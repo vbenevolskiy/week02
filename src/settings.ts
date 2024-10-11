@@ -20,7 +20,8 @@ export const SETTINGS = {
     },
     SECURITY: {
         SALT_ROUNDS: 10,
-        JWT_SECRET_KEY: process.env.SECRET_KEY || "interstellar"
+        JWT_SECRET_KEY: process.env.SECRET_KEY || "interstellar",
+        JWT_EXPIRATIONS_TIME: "600s"
     },
     ADMIN_AUTH: 'admin:qwerty',
     // MONGO_URI: 'mongodb://localhost:27017',
