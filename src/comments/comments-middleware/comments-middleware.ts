@@ -5,6 +5,7 @@ import {
    commentsQueryPageSize,
    commentsQuerySortBy, commentsQuerySortDirection
 } from "./comments-validator";
+import {checkValidationResults} from "../../common-middleware/validation-results";
 
 export const commentsDeleteMiddleware = [
    authBearerMiddleware
@@ -12,12 +13,14 @@ export const commentsDeleteMiddleware = [
 
 export const commentsPutMiddleware = [
    authBearerMiddleware,
-   commentsContentValidator
+   commentsContentValidator,
+   checkValidationResults
 ]
 
 export const commentsPostMiddleware = [
    authBearerMiddleware,
-   commentsContentValidator
+   commentsContentValidator,
+   checkValidationResults
 ]
 
 export const commentsGetMiddleware = [
