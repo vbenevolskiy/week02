@@ -1,6 +1,7 @@
 import {CommentContext, CommentDBModel, CommentInputModel, CommentViewModel} from "./comments-types";
 import {commentsRepo} from "./comments-repositories/comments-repo";
 import {ObjectId} from "mongodb";
+import {usersService} from "../users/users-service";
 
 type CommentsService = {
    getCommentById: (id: string) => Promise<CommentViewModel | null>
@@ -16,13 +17,14 @@ export const commentsService: CommentsService = {
    },
 
    createComment: async (comment: CommentInputModel, context: CommentContext): Promise<CommentViewModel> =>{
+      const loginName = await usersService.getUserById(context.userId);
       const newComment: CommentDBModel = {
          _id: new ObjectId(),
          content: comment.content,
          createdAt: new Date().toISOString(),
          commentatorInfo: {
-            userId: new ObjectId(),
-            userLogin: 'Vasily'
+            userId: new ObjectId(context.userId),
+            userLogin: loginName,
          },
          postId: new ObjectId()
       }

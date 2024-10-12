@@ -1,7 +1,7 @@
 import {CommentDBModel, CommentViewModel} from "./comments-types";
 
 export const commentDBToCommentViewMapper = (record: CommentDBModel): CommentViewModel => {
-   return {
+   const result: CommentViewModel = {
       id: record._id.toString(),
       content: record.content,
       createdAt: record.createdAt,
@@ -10,4 +10,7 @@ export const commentDBToCommentViewMapper = (record: CommentDBModel): CommentVie
          userLogin: record.commentatorInfo.userLogin
       },
    }
+   console.log('------------- MAPPER -------------')
+   console.log(result)
+   return result
 }

@@ -27,12 +27,24 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 }
 
 export const authBearerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) return res.sendStatus(401)
+    if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+        // console.log('No auth header or doesnt starts with Bearer')
+        return res.sendStatus(401)
+    }
     const token = req.headers.authorization.split(' ')[1]
+    // console.log(token)
     const payload = jwtService.getUserIdByJWTToken(token)
-    if (!payload) return res.sendStatus(401)
+    // console.log(`Payload: ${payload}`)
+    if (!payload?.userId) {
+        // console.log('No payload.userId')
+        return res.sendStatus(401)
+    }
     const user = await usersQueryRepo.getUserData(new ObjectId(payload.userId))
-    if (!user) return res.sendStatus(401)
+    // console.log(`User: ${user}`)
+    if (!user) {
+        // console.log('No user found')
+        return res.sendStatus(401)
+    }
     req.headers.userId = user.userId
     next()
 }

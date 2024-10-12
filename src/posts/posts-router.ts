@@ -124,5 +124,5 @@ postsRouter.post('/:id/comments',
          content: req.body.content,
       }
       const postResult = await commentsService.createComment(comment, context)
-      res.status(200).json(postResult)
+      res.status(201).json(postResult)
    })

@@ -9,7 +9,7 @@ type JWTService = {
 export const jwtService: JWTService = {
 
    createJWTToken: (userId: string) : string => {
-      return jwt.sign({userId}, SETTINGS.SECURITY.JWT_SECRET_KEY, {expiresIn: SETTINGS.SECURITY.JWT_EXPIRATIONS_TIME})
+      return String(jwt.sign({userId}, SETTINGS.SECURITY.JWT_SECRET_KEY, {expiresIn: SETTINGS.SECURITY.JWT_EXPIRATIONS_TIME}))
    },
 
    getUserIdByJWTToken: (token: string): {userId: string} | null => {
