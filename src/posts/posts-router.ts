@@ -100,7 +100,7 @@ postsRouter.get('/:postId/comments',
          pageSize: req.query.pageSize!,
          postId: req.params.postId!
       }
-      if (!await postsQueryRepo.isValidPostID(new ObjectId(qOptions.postId!))) res.sendStatus(404)
+      if (!await postsQueryRepo.isValidPostID(new ObjectId(qOptions.postId!))) return res.sendStatus(404)
       const totalCount = await commentsQueryRepo.getTotalCount(qOptions)
       const paginator: CommentsPaginator = {
          pagesCount: Math.ceil(totalCount / qOptions.pageSize),
@@ -117,11 +117,11 @@ postsRouter.post('/:postId/comments',
    async (req: RequestURIBody<CommentPostURIModel, CommentInputModel>, res: ResponseBody<CommentViewModel>) => {
       const context: CommentContext = {
          userId: <string>req.headers.userId,
-         postId: req.params.postId,
+         postId: req.params.postId
       }
       if (!await postsQueryRepo.isValidPostID(new ObjectId(context.postId))) return res.sendStatus(404)
       const comment: CommentInputModel = {
-         content: req.body.content,
+         content: req.body.content
       }
       const postResult = await commentsService.createComment(comment, context)
       res.status(201).json(postResult)

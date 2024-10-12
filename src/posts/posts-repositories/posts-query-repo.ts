@@ -3,7 +3,6 @@ import {PostDBModel, PostsQueryInputModel, PostViewModel} from "../posts-types";
 import {dbClient, dbName} from "../../db";
 import {SETTINGS} from "../../settings";
 import {postDBToPostViewMapper} from "../posts-mappers";
-import {commentsQueryRepo} from "../../comments/comments-repositories/comments-query-repo";
 
 type PostsQueryRepo = {
    posts: Collection<PostDBModel>
@@ -29,6 +28,7 @@ export const postsQueryRepo:PostsQueryRepo = {
 
    isValidPostID: async (id: ObjectId):Promise<boolean> => {
       const dbResult = await postsQueryRepo.posts.findOne({_id: id});
+      console.log(dbResult)
       return !!dbResult
    },
 
