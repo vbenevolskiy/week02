@@ -13,7 +13,7 @@ type CommentsService = {
 export const commentsService: CommentsService = {
 
    getCommentById: async (id: string): Promise<CommentViewModel | null> => {
-      return commentsRepo.getCommentById(new ObjectId(id))
+      return await commentsRepo.getCommentById(new ObjectId(id))
    },
 
    createComment: async (comment: CommentInputModel, context: CommentContext): Promise<CommentViewModel> =>{
@@ -26,7 +26,7 @@ export const commentsService: CommentsService = {
             userId: new ObjectId(context.userId),
             userLogin: loginName,
          },
-         postId: new ObjectId()
+         postId: new ObjectId(context.postId)
       }
       const newCommentId = await commentsRepo.createComment(newComment)
       //@ts-ignore

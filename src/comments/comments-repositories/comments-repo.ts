@@ -18,8 +18,7 @@ export const commentsRepo: CommentsRepo = {
 
    getCommentById: async (id: ObjectId): Promise<CommentViewModel | null> => {
       const dbResult = await commentsRepo.comments.findOne({_id:id})
-      console.log(dbResult)
-      return commentDBToCommentViewMapper(dbResult!)
+      return dbResult ? commentDBToCommentViewMapper(dbResult) : null
    },
 
    createComment: async (comment: CommentDBModel): Promise<ObjectId> => {

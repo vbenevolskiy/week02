@@ -13,10 +13,10 @@ import {postsQueryRepo} from "./posts-repositories/posts-query-repo";
 import {commentsGetMiddleware, commentsPostMiddleware} from "../comments/comments-middleware/comments-middleware";
 import {
    CommentContext,
-   CommentInputModel,
+   CommentInputModel, CommentPostURIModel,
    CommentsPaginator,
    CommentsQueryInputModel,
-   CommentURIModel, CommentViewModel
+   CommentViewModel
 } from "../comments/comments-types";
 import {ObjectId} from "mongodb";
 import {commentsQueryRepo} from "../comments/comments-repositories/comments-query-repo";
@@ -90,15 +90,15 @@ postsRouter.delete('/:id',
       else res.sendStatus(404)
    })
 
-postsRouter.get('/:id/comments',
+postsRouter.get('/:postId/comments',
    commentsGetMiddleware,
-   async (req: RequestURIQuery<CommentURIModel, Partial<CommentsQueryInputModel>>, res: ResponseBody<CommentsPaginator>)=>{
+   async (req: RequestURIQuery<CommentPostURIModel, Partial<CommentsQueryInputModel>>, res: ResponseBody<CommentsPaginator>)=>{
       const qOptions: CommentsQueryInputModel = {
          sortBy: req.query.sortBy!,
          sortDirection: req.query.sortDirection!,
          pageNumber: req.query.pageNumber!,
          pageSize: req.query.pageSize!,
-         postId: req.params.id!
+         postId: req.params.postId!
       }
       if (!await postsQueryRepo.isValidPostID(new ObjectId(qOptions.postId!))) res.sendStatus(404)
       const totalCount = await commentsQueryRepo.getTotalCount(qOptions)
@@ -112,14 +112,14 @@ postsRouter.get('/:id/comments',
       res.status(200).json(paginator)
    })
 
-postsRouter.post('/:id/comments',
+postsRouter.post('/:postId/comments',
    commentsPostMiddleware,
-   async (req: RequestURIBody<CommentURIModel, CommentInputModel>, res: ResponseBody<CommentViewModel>) => {
+   async (req: RequestURIBody<CommentPostURIModel, CommentInputModel>, res: ResponseBody<CommentViewModel>) => {
       const context: CommentContext = {
          userId: <string>req.headers.userId,
-         postId: req.params.id,
+         postId: req.params.postId,
       }
-      if (!await postsQueryRepo.isValidPostID(new ObjectId(context.postId))) res.sendStatus(404)
+      if (!await postsQueryRepo.isValidPostID(new ObjectId(context.postId))) return res.sendStatus(404)
       const comment: CommentInputModel = {
          content: req.body.content,
       }

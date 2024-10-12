@@ -29,7 +29,7 @@ export const commentsQueryRepo: CommentsQueryRepo = {
    getTotalCount: async (qOptions: CommentsQueryInputModel): Promise<number> => {
       return await commentsQueryRepo
          .comments
-         .countDocuments(commentsQueryRepo.searchFilterFactory(qOptions))
+         .countDocuments(commentsQueryRepo.searchFilterFactory(qOptions))//commentsQueryRepo.searchFilterFactory(qOptions))
    },
 
    getAllComments: async (qOptions: CommentsQueryInputModel): Promise<CommentViewModel[]> => {

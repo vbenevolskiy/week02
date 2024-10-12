@@ -1,6 +1,4 @@
 import {authBearerMiddleware} from "../../common-middleware/auth";
-import request from "supertest";
-import {response} from "express";
 import {
    commentsContentValidator,
    commentsQueryPageNumber,

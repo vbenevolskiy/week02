@@ -5,6 +5,10 @@ export type CommentURIModel = {
    id: string
 }
 
+export type CommentPostURIModel = {
+   postId: string
+}
+
 export type CommentInputModel = {
    content: string
 }

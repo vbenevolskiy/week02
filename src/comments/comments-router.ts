@@ -9,20 +9,21 @@ export const commentsRouter = Router()
 commentsRouter.get('/:id',
    async (req: RequestURI<CommentURIModel>, res: ResponseBody<CommentViewModel>) => {
       const comment: CommentViewModel | null = await commentsService.getCommentById(req.params.id)
-      console.log('--------------- ROUTER ---------------')
-      console.log(comment)
-      if (!comment) res.sendStatus(404)
-      res.status(200).json(comment!)
+      if (!comment) return res.sendStatus(404)
+      return res.status(200).json(comment)
    })
 
 commentsRouter.put('/:id',
    commentsPutMiddleware,
    async (req: RequestURIBody<CommentURIModel, CommentInputModel>, res: Response) => {
       const comment = await commentsService.getCommentById(req.params.id)
+      const input: CommentInputModel | null = {
+         content: req.body.content,
+      }
       if (!comment) return res.sendStatus(404)
       if (comment.commentatorInfo.userId !== req.headers.userId) return res.sendStatus(403)
-      const updateResult = await commentsService.updateComment(req.params.id, comment)
-      updateResult ? res.sendStatus(204) : res.sendStatus(404)
+      const updateResult = await commentsService.updateComment(req.params.id, input)
+      return updateResult ? res.sendStatus(204) : res.sendStatus(404)
    })
 
 commentsRouter.delete('/:id',
