@@ -23,6 +23,10 @@ export const SETTINGS = {
       JWT_SECRET_KEY: process.env.SECRET_KEY || "interstellar",
       JWT_EXPIRATIONS_TIME: "600s"
    },
+   EMAIL: {
+     ACCOUNT: 'backend.sifu@gmail.com',
+     PASSWORD: 'q123Q123!!'
+   },
    ADMIN_AUTH: 'admin:qwerty',
    // MONGO_URI: 'mongodb://localhost:27017',
    MONGO_URI: 'mongodb+srv://vvb:q123Q123!!@vbcluster.y0j19.mongodb.net/?retryWrites=true&w=majority&appName=vbcluster',
