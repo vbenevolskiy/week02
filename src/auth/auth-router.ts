@@ -1,6 +1,5 @@
 import {Router, Response, Request} from "express";
-import cookieParser from "cookie-parser";
-import {RequestBody, RequestURI} from "../common-types/request-types";
+import {RequestBody} from "../common-types/request-types";
 import {AuthInputModel, ConfirmationCodeInputModel, LoginSuccessViewModel, ResendEmailInputModel} from "./auth-types";
 import {
    authPostConfirmationCodeMiddleware,
@@ -29,7 +28,6 @@ authRouter.post("/login",
          accessToken: tokensService.createATToken(user._id.toString())
       }
       const cookie_value = await tokensService.createRTToken(user._id.toString())
-
       res.cookie('refreshToken', cookie_value, { httpOnly: true, secure: true });
       res.status(200).json(success)
    }
@@ -38,15 +36,16 @@ authRouter.post("/login",
 authRouter.post("/refresh-token",
    async (req: Request, res: Response) => {
       const rToken = req.cookies.refreshToken;
-      if (!rToken) return res.sendStatus(400)
+      if (!rToken) return res.sendStatus(401)
       if (!await tokensService.validateRTToken(rToken)) return res.sendStatus(401)
       await tokensService.revokeRTToken(rToken)
       //@ts-ignore
-      const userId = tokensService.getUserIdByToken(rToken).toString()
+      const payload = tokensService.getUserIdByToken(rToken)
+      if (!payload?.userId) return res.sendStatus(401)
       const success: LoginSuccessViewModel = {
-         accessToken: tokensService.createATToken(userId)
+         accessToken: tokensService.createATToken(payload.userId)
       }
-      const cookie_value = await tokensService.createRTToken(userId)
+      const cookie_value = await tokensService.createRTToken(payload.userId)
       res.cookie('refreshToken', cookie_value, { httpOnly: true, secure: true });
       res.status(200).json(success)
    }

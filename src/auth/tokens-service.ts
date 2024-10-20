@@ -18,7 +18,7 @@ export const tokensService: TokensService = {
 
    createRTToken: async (userId: string): Promise<string> => {
       const rToken = String(jwt.sign({userId}, SETTINGS.SECURITY.JWT_SECRET_KEY, {expiresIn: SETTINGS.SECURITY.JWT_RT_EXPIRATION_TIME}))
-      const result = await tokensRepo.addRefreshToken(rToken)
+      await tokensRepo.addRefreshToken(rToken)
       return rToken
    },
 
@@ -27,7 +27,8 @@ export const tokensService: TokensService = {
    },
 
    validateRTToken: async (token: string): Promise<boolean> => {
-      return tokensRepo.validateRefreshToken(token)
+      if (!await tokensRepo.validateRefreshToken(token)) return false;
+      return Boolean(tokensService.getUserIdByToken(token))
    },
 
    getUserIdByToken: (token: string): { userId: string } | null => {
