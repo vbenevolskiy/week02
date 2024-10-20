@@ -38,7 +38,7 @@ usersRouter.post("/",
          password: req.body.password,
          email: req.body.email.toLowerCase(),
       }
-      const user = await usersService.createUser(newUser)
+      const user = await usersService.createAdministrativeUser(newUser)
       //@ts-ignore
       if (user.login) return res.status(201).json(user)
       return res.status(400).json(user)

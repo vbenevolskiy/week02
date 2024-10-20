@@ -50,7 +50,7 @@ export const usersQueryRepo: UsersQueryRepo = {
          ]
       }
       const user = await usersQueryRepo.users.findOne(filter)
-      if (!user) return null
+      if (!user || !user.emailIsConfirmed) return null
       const passedHash = await bcrypt.hash(credentials.password, user.salt)
       return passedHash === user.pwdHash ? user : null
    },

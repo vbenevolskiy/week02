@@ -5,12 +5,12 @@ config()
 export const SETTINGS = {
    PORT: process.env.PORT || 5000,
    PATH: {
-      AUTH: '/hometask_06/api/auth',
-      BLOGS: '/hometask_06/api/blogs',
-      COMMENTS: '/hometask_06/api/comments',
-      POSTS: '/hometask_06/api/posts',
-      TESTING: '/hometask_06/api/testing/all-data',
-      USERS: '/hometask_06/api/users',
+      AUTH: '/hometask_07/api/auth',
+      BLOGS: '/hometask_07/api/blogs',
+      COMMENTS: '/hometask_07/api/comments',
+      POSTS: '/hometask_07/api/posts',
+      TESTING: '/hometask_07/api/testing/all-data',
+      USERS: '/hometask_07/api/users',
    },
    COLLECTIONS: {
       BLOGS: 'blogs',
@@ -25,7 +25,7 @@ export const SETTINGS = {
    },
    EMAIL: {
      ACCOUNT: 'backend.sifu@gmail.com',
-     PASSWORD: 'q123Q123!!'
+     PASSWORD: 'qmpk jifn upfd konj'
    },
    ADMIN_AUTH: 'admin:qwerty',
    // MONGO_URI: 'mongodb://localhost:27017',

@@ -17,7 +17,7 @@ export const commentsService: CommentsService = {
    },
 
    createComment: async (comment: CommentInputModel, context: CommentContext): Promise<CommentViewModel> =>{
-      const loginName = await usersService.getUserById(context.userId);
+      const loginName = await usersService.getUserLoginById(context.userId);
       const newComment: CommentDBModel = {
          _id: new ObjectId(),
          content: comment.content,

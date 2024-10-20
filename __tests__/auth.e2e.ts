@@ -113,3 +113,30 @@ describe('/auth', ()=>{
          .expect(204)
    })
 })
+
+describe('check registration, email confirmation check & resend', ()=>{
+   beforeAll(async () => {
+      await request(app)
+         .delete(SETTINGS.PATH.TESTING)
+         .expect(204)
+   })
+   it('registering non-administrative user', async()=>{
+      await request(app)
+         .post(SETTINGS.PATH.AUTH+'/registration')
+         .send({login: "vitaly", password: "q123Q123!", email: "vbenevolskiy@gmail.com"})
+         .expect(400)
+   })
+   it('resending email', async()=>{
+      await request(app)
+         .post(SETTINGS.PATH.AUTH+'/registration-email-resending')
+         .send({email: "venevolskiy@gmail.com"})
+         .expect(400)
+      await request(app)
+         .post(SETTINGS.PATH.AUTH+'/registration-email-resending')
+         .send({email: "vbenevolskiy@gmail.com"})
+         .expect(204)
+      await request(app)
+         .post(SETTINGS.PATH.AUTH+'/registration-confirmation')
+         .send({code: '390af186-3efc-46f7-b6d8-d5aabfb61fe9'})
+   })
+})

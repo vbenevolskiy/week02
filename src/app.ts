@@ -1,4 +1,4 @@
-import express, {Request, Response} from "express"
+import express, {Response} from "express"
 import {blogsRouter} from "./blogs/blogs-router"
 import {postsRouter} from "./posts/posts-router"
 import {testingRouter} from "./testing/testing-router";
@@ -10,8 +10,8 @@ import {commentsRouter} from "./comments/comments-router";
 export const app = express()
 app.use(express.json())
 
-app.get("/",(req:Request, res:Response) => {
-   res.status(200).send("APP v. 1.05")
+app.get("/",(req, res:Response) => {
+   res.status(200).send("APP week 6")
 })
 app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use(SETTINGS.PATH.POSTS, postsRouter)

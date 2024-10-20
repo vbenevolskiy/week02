@@ -6,3 +6,11 @@ export type AuthInputModel = {
 export type LoginSuccessViewModel = {
    accessToken: string;
 }
+
+export type ConfirmationCodeInputModel = {
+   code: string;
+}
+
+export type ResendEmailInputModel = {
+   email: string;
+}

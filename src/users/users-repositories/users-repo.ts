@@ -1,15 +1,19 @@
-import {Collection, ObjectId} from "mongodb";
+import {Collection, ObjectId, WithId} from "mongodb";
 import {UserDBModel, UserViewModel} from "../users-types";
 import {dbClient, dbName} from "../../db";
 import {SETTINGS} from "../../settings";
 import {userDBToUserViewMapper} from "../users-mappers";
+import {id} from "date-fns/locale";
 
 type UsersRepo = {
    users: Collection<UserDBModel>
    isValidUserId: (id: ObjectId) => Promise<boolean>
-   isValidUserLogin (login: string): Promise<boolean>
-   isValidUserEmail (email: string): Promise<boolean>
+   isUniqueUserLogin (login: string): Promise<boolean>
+   isUniqueUserEmail (email: string): Promise<boolean>
    getUserById: (id: ObjectId) => Promise<UserViewModel | null>
+   getDBUserByEmail: (email: string) => Promise<UserDBModel | null>
+   getDBUserByConfirmationCode (confirmationCode: string): Promise<UserDBModel | null>
+   updateConfirmationStatus (email: string): Promise<boolean>
    createUser: (user: UserDBModel) => Promise<ObjectId>
    deleteUser: (id: ObjectId) => Promise<boolean>
 }
@@ -23,12 +27,12 @@ export const usersRepo: UsersRepo = {
       return !!dbResult
    },
 
-   isValidUserLogin: async (login: string): Promise<boolean> => {
+   isUniqueUserLogin: async (login: string): Promise<boolean> => {
       const dbResult: UserDBModel | null = await usersRepo.users.findOne({login: login.toLowerCase()});
       return !dbResult
    },
 
-   isValidUserEmail: async (email: string): Promise<boolean> => {
+   isUniqueUserEmail: async (email: string): Promise<boolean> => {
       const dbResult: UserDBModel | null = await usersRepo.users.findOne({email: email.toLowerCase()});
       return !dbResult
    },
@@ -36,6 +40,21 @@ export const usersRepo: UsersRepo = {
    getUserById: async (id: ObjectId): Promise<UserViewModel | null> => {
       const user = await usersRepo.users.findOne({_id: id})
       return user ? userDBToUserViewMapper(user!) : null
+   },
+
+   getDBUserByEmail: async (email: string): Promise<UserDBModel | null> => {
+      const user = await usersRepo.users.findOne({email: email})
+      return user ? user : null
+   },
+
+   getDBUserByConfirmationCode: async (confirmationCode): Promise<UserDBModel | null> => {
+      const user = await usersRepo.users.findOne({emailConfirmationCode: confirmationCode})
+      return user ? user : null
+   },
+
+   updateConfirmationStatus: async (email: string): Promise<boolean> => {
+      const result = await usersRepo.users.updateOne({email: email}, {$set: {emailIsConfirmed: true, emailConfirmationCode: ""}})
+      return result.modifiedCount === 1
    },
 
    createUser: async (user: UserDBModel):Promise<ObjectId> => {
