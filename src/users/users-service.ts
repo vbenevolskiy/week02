@@ -149,7 +149,8 @@ export const usersService: UsersService = {
          }]
       }
       //@ts-ignore
-      const confCode = user.emailConfirmationCode
+      const confCode = uuidv4()
+      await usersRepo.updateConfirmationCode(user.email, confCode)
       const messageBody = `
       <h1>Thanks for your registration</h1>
       <p>To finish registration please follow the link below:

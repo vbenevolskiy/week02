@@ -1,9 +1,9 @@
-import {Collection, ObjectId, WithId} from "mongodb";
+import {Collection, ObjectId} from "mongodb";
 import {UserDBModel, UserViewModel} from "../users-types";
 import {dbClient, dbName} from "../../db";
 import {SETTINGS} from "../../settings";
 import {userDBToUserViewMapper} from "../users-mappers";
-import {id} from "date-fns/locale";
+
 
 type UsersRepo = {
    users: Collection<UserDBModel>
@@ -14,6 +14,7 @@ type UsersRepo = {
    getDBUserByEmail: (email: string) => Promise<UserDBModel | null>
    getDBUserByConfirmationCode (confirmationCode: string): Promise<UserDBModel | null>
    updateConfirmationStatus (email: string): Promise<boolean>
+   updateConfirmationCode (email: string, newCode: string): Promise<boolean>
    createUser: (user: UserDBModel) => Promise<ObjectId>
    deleteUser: (id: ObjectId) => Promise<boolean>
 }
@@ -50,6 +51,11 @@ export const usersRepo: UsersRepo = {
    getDBUserByConfirmationCode: async (confirmationCode): Promise<UserDBModel | null> => {
       const user = await usersRepo.users.findOne({emailConfirmationCode: confirmationCode})
       return user ? user : null
+   },
+
+   updateConfirmationCode: async (email: string, newCode: string): Promise<boolean> => {
+      const result = await usersRepo.users.updateOne({email: email}, {$set: {emailConfirmationCode: newCode}})
+      return result.modifiedCount === 1
    },
 
    updateConfirmationStatus: async (email: string): Promise<boolean> => {
