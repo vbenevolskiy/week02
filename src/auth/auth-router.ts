@@ -1,4 +1,5 @@
 import {Router, Response, Request} from "express";
+import cookieParser from "cookie-parser";
 import {RequestBody, RequestURI} from "../common-types/request-types";
 import {AuthInputModel, ConfirmationCodeInputModel, LoginSuccessViewModel, ResendEmailInputModel} from "./auth-types";
 import {
@@ -8,11 +9,9 @@ import {
 } from "./auth-middleware/auth-middleware";
 import {ObjectId} from "mongodb";
 import {usersQueryRepo} from "../users/users-repositories/users-query-repo";
-import {jwtService} from "./jwt-service";
+import {tokensService} from "./tokens-service";
 import {authBearerMiddleware} from "../common-middleware/auth";
 import {UserInputModel} from "../users/users-types";
-import {sendRegistrationMail} from "../adapters/gmail";
-import {usersPostMiddleware} from "../users/users-middleware/users-middleware";
 import {usersService} from "../users/users-service";
 
 export const authRouter = Router();
@@ -27,16 +26,50 @@ authRouter.post("/login",
       const user = await usersQueryRepo.checkUserCredentials(credentials)
       if (!user) return res.sendStatus(401)
       const success: LoginSuccessViewModel = {
-         accessToken: jwtService.createJWTToken(user._id.toString())
+         accessToken: tokensService.createATToken(user._id.toString())
       }
+      const cookie_value = await tokensService.createRTToken(user._id.toString())
+
+      res.cookie('refreshToken', cookie_value, { httpOnly: true, secure: true });
       res.status(200).json(success)
+   }
+)
+
+authRouter.post("/refresh-token",
+   async (req: Request, res: Response) => {
+      const rToken = req.cookies.refreshToken;
+      if (!rToken) return res.sendStatus(400)
+      if (!await tokensService.validateRTToken(rToken)) return res.sendStatus(401)
+      await tokensService.revokeRTToken(rToken)
+      //@ts-ignore
+      const userId = tokensService.getUserIdByToken(rToken).toString()
+      const success: LoginSuccessViewModel = {
+         accessToken: tokensService.createATToken(userId)
+      }
+      const cookie_value = await tokensService.createRTToken(userId)
+      res.cookie('refreshToken', cookie_value, { httpOnly: true, secure: true });
+      res.status(200).json(success)
+   }
+)
+
+authRouter.post("/logout",
+   async (req: Request, res: Response)=>{
+      const rToken = req.cookies.refreshToken;
+      if (!rToken) return res.sendStatus(401)
+      if (!await tokensService.validateRTToken(rToken)) return res.sendStatus(401)
+      if (!await tokensService.revokeRTToken(rToken)) return res.sendStatus(401)
+      return res.sendStatus(204)
    }
 )
 
 authRouter.get('/me',
    authBearerMiddleware,
    async (req: Request, res: Response) => {
-      const result = await usersQueryRepo.getUserData(new ObjectId(<string>req.headers.userId))
+      const aToken = req.headers.authorization?.split(' ')[1];
+      if (!aToken) return res.sendStatus(401)
+      const payload = tokensService.getUserIdByToken(aToken)
+      if (!payload?.userId) return res.sendStatus(401)
+      const result = await usersQueryRepo.getUserData(new ObjectId(payload.userId))
       return res.status(200).json(result)
    }
 )

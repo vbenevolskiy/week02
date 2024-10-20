@@ -14,3 +14,7 @@ export type ConfirmationCodeInputModel = {
 export type ResendEmailInputModel = {
    email: string;
 }
+
+export type RefreshTokenDBModel = {
+   refreshToken: string;
+}

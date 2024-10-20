@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from 'express';
 import {SETTINGS} from "../settings";
-import {jwtService} from "../auth/jwt-service";
+import {tokensService} from "../auth/tokens-service";
 import {usersQueryRepo} from "../users/users-repositories/users-query-repo";
 import {ObjectId} from "mongodb";
 
@@ -20,7 +20,7 @@ export const authBearerMiddleware = async (req: Request, res: Response, next: Ne
    }
    const token = req.headers.authorization.split(' ')[1]
    // console.log(token)
-   const payload = jwtService.getUserIdByJWTToken(token)
+   const payload = tokensService.getUserIdByToken(token)
    // console.log(`Payload: ${payload}`)
    if (!payload?.userId) {
       // console.log('No payload.userId')

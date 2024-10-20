@@ -1,4 +1,5 @@
 import express, {Response} from "express"
+import cookieParser from "cookie-parser"
 import {blogsRouter} from "./blogs/blogs-router"
 import {postsRouter} from "./posts/posts-router"
 import {testingRouter} from "./testing/testing-router";
@@ -8,7 +9,9 @@ import {authRouter} from "./auth/auth-router";
 import {commentsRouter} from "./comments/comments-router";
 
 export const app = express()
+
 app.use(express.json())
+app.use(cookieParser())
 
 app.get("/",(req, res:Response) => {
    res.status(200).send("APP week 6")
