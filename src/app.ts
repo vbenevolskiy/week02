@@ -14,7 +14,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 app.get("/",(req, res:Response) => {
-   res.status(200).send("APP week 6")
+   res.status(200).send("APP week 8")
 })
 app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use(SETTINGS.PATH.POSTS, postsRouter)
